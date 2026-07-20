@@ -78,13 +78,12 @@ public class DoctorService : IDoctorService
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
         if (doctor == null) throw new KeyNotFoundException("El médico no existe.");
 
-        // Asegurate de que tu entidad de disponibilidad use IsActive también
-        var availabilities = await _persistence.GetFiltered<Disponibilidad>(a => a.DoctorId == id );
+        var availabilities = await _persistence.GetFiltered<Disponibilidad>(a => a.DoctorId == id);
 
         return availabilities?.Select(a => new DoctorModel.AvailabilityResponse(
-            a.DayOfWeek.ToString(),
-            a.StartTime.ToString(@"hh\:mm"),
-            a.EndTime.ToString(@"hh\:mm")
+            a.DiaDeLaSemana.ToString(),
+            a.HoraDeEntrada.ToString("HH:mm"),
+            a.HoraDeSalida.ToString("HH:mm")
         )).ToList() ?? new List<DoctorModel.AvailabilityResponse>();
     }
 
