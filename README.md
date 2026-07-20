@@ -1,16 +1,7 @@
-# Trabajo Práctico Integrador
-## Desarrollo de Software 2026
+# Trabajo Practico Integrador
 
-Acceso al [documento](https://frtutneduar-my.sharepoint.com/:b:/g/personal/franciscovicente_doc_frt_utn_edu_ar/IQD-5kaAARqnT5eL7EnPMCPgAX2LFXXX6e3p-u1C43z5rsQ?e=lbbpnz)
-
-Instrucciones:
-* Realizar una bifurcación por grupo
-* Crear una rama de larga duración `development`
-* Completar `README` con los integrantes en cada bifurcación
-* Todos los integrantes deben participar con confirmaciones en el repositorio bifurcado
-* Organizar el trabajo en equipo y crear ramas temporales
-* Actualizar la rama de larga duración mediante **pull-requests**
-* No eliminar las ramas temporales
-* Tener en cuenta que ya se realizaron las migraciones de Identity, crear nuevas de ser necesario
-* Para más detalles, revisar la grabación de la última clase
-* El endpoint de registración de usuarios administradores está disponible para crear usuarios y poder hacer pruebas, a futuro se eliminará
+## Integrantes y Legajos:
+- Santucho, Manuel (57787 - K4) 
+- Toledo, Angel Joel (58400 - K4)
+- Tolaba, Milton Damian Maciel (57874 - K4)
+- Valverde Vasile, Pablo Javer (57953 - K3)
