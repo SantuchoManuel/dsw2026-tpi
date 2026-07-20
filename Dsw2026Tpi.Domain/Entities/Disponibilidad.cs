@@ -6,25 +6,27 @@ namespace Dsw2026Tpi.Domain.Entities
 {
     public class Disponibilidad : EntityBase
     {
-        // Cambiar tipo de HOra y dia si encontramos
-        public int Mes {  get; set; }
+        public int Mes { get; set; }
         public int Año { get; set; }
         public DayOfWeek DiaDeLaSemana { get; set; }
-        public DateTime HoraDeEntrada { get; set; }
-        public DateTime HoraDeSalida { get; set; }
+        public TimeOnly HoraDeEntrada { get; set; }
+        public TimeOnly HoraDeSalida { get; set; }
         public Guid? DoctorId { get; set; }
         public Doctor Doctor { get; set; }
-        private Disponibilidad()
+
+        private Disponibilidad() 
         {
             
         }
-        public Disponibilidad(int mes, int año, DayOfWeek diaDeLaSemana, DateTime horaDeEntrada, DateTime horaDeSalida, Guid? id) : base(id)
+
+        public Disponibilidad(int mes, int año, DayOfWeek diaDeLaSemana, TimeOnly horaDeEntrada, TimeOnly horaDeSalida, Guid? doctorId, Guid? id = null) : base(id)
         {
             Mes = mes;
             Año = año;
-            DiaDeLaSemana = diaDeLaSemana; 
+            DiaDeLaSemana = diaDeLaSemana;
             HoraDeEntrada = horaDeEntrada;
             HoraDeSalida = horaDeSalida;
+            DoctorId = doctorId;
         }
     }
 }
