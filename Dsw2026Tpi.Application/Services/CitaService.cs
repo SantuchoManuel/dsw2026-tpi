@@ -40,7 +40,7 @@ namespace Dsw2026Tpi.Application.Services
 
             if (paciente == null)
             {
-                paciente = new Paciente(peticion.Patient.Dni, "A Completar", "Sin Celular");
+                paciente = new Paciente(peticion.Patient.Dni, "Sin Email", "Sin Nombre", "Sin Celular");
                 await _persistence.Add(paciente);
             }
 
@@ -48,10 +48,11 @@ namespace Dsw2026Tpi.Application.Services
             {
                 PacienteId = paciente.Id,
                 TurnoId = turno.Id,
-                CitaEstado = (CitaEstado)0 
+                CitaEstado = 0,
+                Motivo = peticion.Reason 
             };
 
-            
+
             turno.EstadoTurno = (EstadoTurno)1;
 
             await _persistence.Add(nuevaCita);
@@ -66,7 +67,7 @@ namespace Dsw2026Tpi.Application.Services
 
             var citas = await _persistence.GetFiltered<Cita>(
                 c => c.PacienteId == paciente.Id && (int)c.CitaEstado == 0,
-                "Turno"
+                "Turno", "Turno.Disponibilidad", "Turno.Disponibilidad.Doctor"
             );
 
             var turnosResponse = new List<CitaModel.Response>();
@@ -77,8 +78,8 @@ namespace Dsw2026Tpi.Application.Services
                 turnosResponse.Add(new CitaModel.Response(
                     cita.Id,
                     fechaYHora,
-                    "Doctor Asignado",
-                    "Motivo a cargar" 
+                    cita.Turno.Disponibilidad.Doctor.Name, 
+                    cita.Motivo 
                 ));
             }
 
