@@ -9,5 +9,6 @@ namespace Dsw2026Tpi.Domain.Entities
         Confirmada = 0, 
         Cancelada = 1, 
         Completada = 2,
+        
     }
 }

@@ -33,8 +33,8 @@ namespace Dsw2026Tpi.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
                     UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
@@ -48,8 +48,8 @@ namespace Dsw2026Tpi.Data.Migrations
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LicenseNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Name = table.Column<string>(type: "nvarchar(100)", maxLength: 100, nullable: false),
+                    LicenseNumber = table.Column<string>(type: "nvarchar(50)", maxLength: 50, nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     SpecialityId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
@@ -86,7 +86,8 @@ namespace Dsw2026Tpi.Data.Migrations
                         name: "FK_Disponibilidades_Doctors_DoctorId",
                         column: x => x.DoctorId,
                         principalTable: "Doctors",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -109,8 +110,51 @@ namespace Dsw2026Tpi.Data.Migrations
                         name: "FK_Turnos_Disponibilidades_DisponibilidadId",
                         column: x => x.DisponibilidadId,
                         principalTable: "Disponibilidades",
-                        principalColumn: "Id");
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
+
+            migrationBuilder.CreateTable(
+                name: "Citas",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    FechaDeAtencion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    FechaDeCancelacion = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    CitaEstado = table.Column<int>(type: "int", nullable: false),
+                    PacienteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    TurnoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Citas", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Citas_Pacientes_PacienteId",
+                        column: x => x.PacienteId,
+                        principalTable: "Pacientes",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Citas_Turnos_TurnoId",
+                        column: x => x.TurnoId,
+                        principalTable: "Turnos",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Citas_PacienteId",
+                table: "Citas",
+                column: "PacienteId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Citas_TurnoId",
+                table: "Citas",
+                column: "TurnoId",
+                unique: true,
+                filter: "[TurnoId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Disponibilidades_DoctorId",
@@ -123,6 +167,12 @@ namespace Dsw2026Tpi.Data.Migrations
                 column: "SpecialityId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Specialities_Name",
+                table: "Specialities",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Turnos_DisponibilidadId",
                 table: "Turnos",
                 column: "DisponibilidadId");
@@ -131,6 +181,9 @@ namespace Dsw2026Tpi.Data.Migrations
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "Citas");
+
             migrationBuilder.DropTable(
                 name: "Pacientes");
 

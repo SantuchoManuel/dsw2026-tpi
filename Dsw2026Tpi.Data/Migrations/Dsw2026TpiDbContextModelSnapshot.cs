@@ -22,6 +22,44 @@ namespace Dsw2026Tpi.Data.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Cita", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<int>("CitaEstado")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaDeAtencion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime>("FechaDeCancelacion")
+                        .HasColumnType("datetime2");
+
+                    b.Property<Guid?>("PacienteId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid?>("TurnoId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("PacienteId");
+
+                    b.HasIndex("TurnoId")
+                        .IsUnique()
+                        .HasFilter("[TurnoId] IS NOT NULL");
+
+                    b.ToTable("Citas", (string)null);
+                });
+
             modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Disponibilidad", b =>
                 {
                     b.Property<Guid>("Id")
@@ -56,7 +94,7 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.HasIndex("DoctorId");
 
-                    b.ToTable("Disponibilidades");
+                    b.ToTable("Disponibilidades", (string)null);
                 });
 
             modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Doctor", b =>
@@ -73,11 +111,13 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.Property<string>("LicenseNumber")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<Guid?>("SpecialityId")
                         .HasColumnType("uniqueidentifier");
@@ -138,16 +178,21 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.Property<string>("Description")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("Name")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.ToTable("Specialities", (string)null);
                 });
@@ -183,14 +228,32 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.HasIndex("DisponibilidadId");
 
-                    b.ToTable("Turnos");
+                    b.ToTable("Turnos", (string)null);
+                });
+
+            modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Cita", b =>
+                {
+                    b.HasOne("Dsw2026Tpi.Domain.Entities.Paciente", "Paciente")
+                        .WithMany()
+                        .HasForeignKey("PacienteId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("Dsw2026Tpi.Domain.Entities.Turno", "Turno")
+                        .WithOne()
+                        .HasForeignKey("Dsw2026Tpi.Domain.Entities.Cita", "TurnoId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Paciente");
+
+                    b.Navigation("Turno");
                 });
 
             modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Disponibilidad", b =>
                 {
                     b.HasOne("Dsw2026Tpi.Domain.Entities.Doctor", "Doctor")
                         .WithMany()
-                        .HasForeignKey("DoctorId");
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Doctor");
                 });
@@ -208,7 +271,8 @@ namespace Dsw2026Tpi.Data.Migrations
                 {
                     b.HasOne("Dsw2026Tpi.Domain.Entities.Disponibilidad", "Disponibilidad")
                         .WithMany()
-                        .HasForeignKey("DisponibilidadId");
+                        .HasForeignKey("DisponibilidadId")
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Disponibilidad");
                 });
