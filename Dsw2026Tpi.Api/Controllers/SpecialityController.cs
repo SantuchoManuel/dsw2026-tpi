@@ -19,7 +19,7 @@ public class SpecialityController : AppController
 
     [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> GetAll([FromQuery] int pageSize, [FromQuery] int pageIndex, [FromQuery] string? name = null)
+    public async Task<IActionResult> GetAll([FromQuery] int pageSize =10 , [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
         var speciality  = await _service.GetAll(pageSize, pageIndex, name);
         return Ok(speciality);
@@ -38,7 +38,7 @@ public class SpecialityController : AppController
     public async Task<IActionResult> Update(Guid id, [FromBody] SpecialityModel.Request request)
     {
        var speciality = await _service.GetById(id);
-       await _service.Update(request);
+       await _service.Update(id, request);
        return Ok(speciality);
     }
 
