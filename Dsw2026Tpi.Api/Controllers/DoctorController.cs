@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [Route("doctors")]
-//[Authorize(Policy = Policies.AdminPolicy)]
+
 public class DoctorController : AppController
 {
     private readonly IDoctorService _doctorService;
@@ -18,7 +18,7 @@ public class DoctorController : AppController
     }
 
     [HttpGet]
-    [AllowAnonymous]
+    [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
         var result = await _doctorService.GetAll(pageSize, pageIndex, name);
@@ -26,7 +26,8 @@ public class DoctorController : AppController
     }
 
     [HttpGet("{id:guid}/availabilities")]
-    [AllowAnonymous]
+    [Authorize]
+
     public async Task<IActionResult> GetAvailabilities(Guid id)
     {
         try
@@ -41,6 +42,7 @@ public class DoctorController : AppController
     }
 
     [HttpPost]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Create([FromBody] DoctorModel.Request request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -57,6 +59,7 @@ public class DoctorController : AppController
     }
 
     [HttpPut("{id:guid}")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Update(Guid id, [FromBody] DoctorModel.Request request)
     {
         if (!ModelState.IsValid) return BadRequest(ModelState);
@@ -77,6 +80,7 @@ public class DoctorController : AppController
     }
 
     [HttpDelete("{id:guid}")]
+    [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Delete(Guid id)
     {
         try
