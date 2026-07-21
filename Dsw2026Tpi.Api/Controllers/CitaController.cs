@@ -1,5 +1,6 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers
@@ -42,7 +43,7 @@ namespace Dsw2026Tpi.Api.Controllers
             return Ok();
         }
 
-        [HttpGet("patient?dni={dni}")]
+        [HttpGet("patient")]
         public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
         {
             if (dni <= 0)
