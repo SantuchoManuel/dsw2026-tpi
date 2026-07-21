@@ -17,7 +17,6 @@ public class DoctorService : IDoctorService
 
     public async Task<Pagination<DoctorModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
     {
-        // Filtramos usando tu propiedad IsActive
         var doctors = await _persistence.Paginate<Doctor, string>(
             pageSize,
             pageIndex,
@@ -37,7 +36,7 @@ public class DoctorService : IDoctorService
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);//
         if (specialty == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
 
-        // Usamos exactamente tu constructor
+
         var doctor = new Doctor(request.Name, request.LicenseNumber, specialty);
 
         await _persistence.Add(doctor);
@@ -53,7 +52,7 @@ public class DoctorService : IDoctorService
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);
         if (specialty == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
 
-        // ATENCIÓN ACÁ (Leé la nota abajo sobre las líneas rojas)
+ 
         doctor.Name = request.Name;
         doctor.LicenseNumber = request.LicenseNumber;
         doctor.SpecialityId = request.SpecialityId;
@@ -68,7 +67,6 @@ public class DoctorService : IDoctorService
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
         if (doctor == null) throw new KeyNotFoundException("El médico no existe.");
 
-        // Usamos tu método para desactivarlo
         doctor.Deactivate();
         await _persistence.Update(doctor);
     }
