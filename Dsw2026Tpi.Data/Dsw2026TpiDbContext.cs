@@ -11,6 +11,7 @@ public class Dsw2026TpiDbContext: DbContext
         base(options)
     {
     }
+    public DbSet<Cita> Citas { get; set; }
     public DbSet<Disponibilidad> Disponibilidades { get; set; }
     public DbSet<Turno> Turnos { get; set; }
     public DbSet<Doctor> Doctores { get; set; }
