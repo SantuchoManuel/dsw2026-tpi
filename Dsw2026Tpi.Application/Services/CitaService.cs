@@ -1,4 +1,5 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+﻿using Microsoft.EntityFrameworkCore;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
@@ -100,6 +101,52 @@ namespace Dsw2026Tpi.Application.Services
 
             await _persistence.Update(cita);
             await _persistence.Update(cita.Turno);
+        }
+        public async Task<IEnumerable<CitaBusquedaModel>> GetAppointmentsByDateAsync(DateTime date)
+        {
+            var targetDate = DateOnly.FromDateTime(date);
+
+            var citas = await _persistence.GetFiltered<Cita>(
+                c => c.Turno.Fecha == targetDate, "Turno.Disponibilidad.Doctor.Speciality" 
+            );
+
+            return citas.Select(c => new CitaBusquedaModel
+            {
+                Specialty = c.Turno.Disponibilidad.Doctor.Speciality.Name ?? c.Turno.Disponibilidad.Doctor.Speciality.Name,
+                Doctor = c.Turno.Disponibilidad.Doctor.Name ?? c.Turno.Disponibilidad.Doctor.Name,
+                AvailableTime = $"{c.Turno.Fecha:yyyy-MM-dd} {c.Turno.HoraDeInicio}"
+            }).ToList();
+        }
+
+        public async Task<Pagination<CitaBusquedaModel>> SearchAppointmentsAsync(
+            Guid? specialtyId, Guid? doctorId, int? dni, DateTime? date, int page, int pageSize)
+        {
+            DateOnly? targetDate = date.HasValue ? DateOnly.FromDateTime(date.Value) : null;
+
+            var citas = await _persistence.GetFiltered<Cita>(
+                c => (!targetDate.HasValue || c.Turno.Fecha == targetDate.Value) &&
+                     (!specialtyId.HasValue || c.Turno.Disponibilidad.Doctor.Speciality.Id == specialtyId.Value) &&
+                     (!doctorId.HasValue || c.Turno.Disponibilidad.Doctor.Id == doctorId.Value) &&
+                     (!dni.HasValue || c.Paciente.Dni == dni.Value),
+                "Turno.Disponibilidad.Doctor.Speciality", "Paciente" 
+            );
+
+            var totalRecords = citas.Count();
+
+            var items = citas
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .Select(c => new CitaBusquedaModel
+                {
+                    Specialty = c.Turno.Disponibilidad.Doctor.Speciality.Name ?? c.Turno.Disponibilidad.Doctor.Speciality.Name,
+                    Doctor = c.Turno.Disponibilidad.Doctor.Name ?? c.Turno.Disponibilidad.Doctor.Name,
+                    AvailableTime = $"{c.Turno.Fecha:yyyy-MM-dd} {c.Turno.HoraDeInicio}",
+                    PatientName = c.Paciente.Name,
+                    Dni = c.Paciente.Dni.ToString()
+                })
+                .ToList();
+
+            return new Pagination<CitaBusquedaModel>(pageSize, page, totalRecords, items);
         }
     }
 }
