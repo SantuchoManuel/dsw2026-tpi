@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Numerics;
@@ -20,8 +20,12 @@ public class SpecialityService : ISpecialityService
 
     public async Task<Pagination<SpecialityModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
     {
-       var specialities = await _persistence.Paginate<Speciality, string>(pageSize, pageIndex, s => string.IsNullOrWhiteSpace(name) ||
-                                                   s.Name.Contains(name), x => x.Name);
+       var specialities = await _persistence.Paginate<Speciality, string>(
+           pageSize,
+           pageIndex,
+           s => (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)) && s.IsDeleted == false,
+           x => x.Name);
+
        return specialities.Map(s => new SpecialityModel.Response(s.Id, s.Name, s.Description));
     }
 
@@ -32,22 +36,19 @@ public class SpecialityService : ISpecialityService
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
 
-    public async Task<SpecialityModel.Response> Delete(SpecialityModel.Request request)
+  
+
+    public async Task<SpecialityModel.Response?> GetById(Guid id)
     {
-        var speciality = await _persistence.First<Speciality>(s => s.Name == request.Name);
-        await _persistence.Delete(speciality);
-        return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
-    }
-    public async Task<SpecialityModel.Response> GetById(Guid id)
-    {
-        var speciality = await _persistence.First<Speciality>(s => s.Id == id);
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        if (speciality == null) return null;
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
 
     public async Task<SpecialityModel.Response> Update(Guid id, SpecialityModel.Request request)
     {
-        var speciality = await _persistence.First<Speciality>(s => s.Id == id);
-        if (speciality == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        if (speciality == null) throw new KeyNotFoundException("La especialidad seleccionada no existe o fue eliminada.");
 
         //aqui se deberia hacer una mini validacion para cambiarlo si fuera diferente y dejarlo de ser iguales o asi
         speciality.Name = request.Name;
@@ -58,5 +59,13 @@ public class SpecialityService : ISpecialityService
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
 
+    public async Task Delete(Guid id)
+    {
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        if (speciality == null) throw new KeyNotFoundException("La especialidad no existe.");
+
+        speciality.EstablecerDeleted();
+        await _persistence.Update(speciality);
+    }
 }
 
