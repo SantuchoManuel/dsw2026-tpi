@@ -48,12 +48,12 @@ namespace Dsw2026Tpi.Application.Services
             {
                 PacienteId = paciente.Id,
                 TurnoId = turno.Id,
-                CitaEstado = 0,
+                CitaEstado = CitaEstado.Confirmada,
                 Motivo = peticion.Reason 
             };
 
 
-            turno.EstadoTurno = (EstadoTurno)1;
+            turno.EstadoTurno = EstadoTurno.BOOKED;
 
             await _persistence.Add(nuevaCita);
             await _persistence.Update(turno);
@@ -97,7 +97,7 @@ namespace Dsw2026Tpi.Application.Services
             cita.FechaDeCancelacion = DateTime.Now;
             cita.CitaEstado = (CitaEstado)1; 
 
-            cita.Turno.EstadoTurno = (EstadoTurno)0;
+            cita.Turno.EstadoTurno = EstadoTurno.AVAILABLE;
 
             await _persistence.Update(cita);
             await _persistence.Update(cita.Turno);

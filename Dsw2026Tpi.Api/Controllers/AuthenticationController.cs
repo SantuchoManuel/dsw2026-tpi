@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [Route("auth")]
+[AllowAnonymous]
 public class AuthenticationController : AppController
 {
     private readonly IAuthenticationService _authenticationService;

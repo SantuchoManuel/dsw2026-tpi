@@ -2,9 +2,10 @@
 {
     public enum EstadoTurno
     {
-        BOOKED = 0,
-        CANCELLED = 1,
-        ATTENDED = 2,
-        NO_SHOW = 3
+        AVAILABLE = 0,
+        BOOKED = 1,
+        CANCELLED = 2,
+        ATTENDED = 3,
+        NO_SHOW = 4
     }
 }

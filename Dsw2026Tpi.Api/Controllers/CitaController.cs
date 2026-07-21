@@ -1,6 +1,7 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Dsw2026Tpi.Api.Controllers
@@ -15,6 +16,7 @@ namespace Dsw2026Tpi.Api.Controllers
             _service = service;
         }
 
+        [Authorize(Policy = Policies.PatientPolicy)]
         [HttpPost]
         public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
         {
@@ -43,6 +45,7 @@ namespace Dsw2026Tpi.Api.Controllers
             return Ok();
         }
 
+        [Authorize(Policy = Policies.PatientPolicy)]
         [HttpGet("patient")]
         public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
         {
@@ -54,6 +57,7 @@ namespace Dsw2026Tpi.Api.Controllers
             return Ok(turnos);
         }
 
+        [Authorize(Policy = Policies.PatientPolicy)]
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelarTurno(Guid id)
         {
