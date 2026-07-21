@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using Dsw2026Tpi.Application.Dtos;
@@ -12,8 +12,7 @@ public interface ISpecialityService
 
     Task<SpecialityModel.Response> Add(SpecialityModel.Request request);
     Task<SpecialityModel.Response> Update(Guid id, SpecialityModel.Request request);
-    Task<SpecialityModel.Response> Delete(SpecialityModel.Request request);
-    Task<SpecialityModel.Response> GetById(Guid id);
-
+    Task Delete(Guid id);
+    Task<SpecialityModel.Response?> GetById(Guid id);
 }
 

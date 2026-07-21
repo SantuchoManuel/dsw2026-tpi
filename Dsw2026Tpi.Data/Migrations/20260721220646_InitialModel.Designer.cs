@@ -4,6 +4,7 @@ using Dsw2026Tpi.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dsw2026Tpi.Data.Migrations
 {
     [DbContext(typeof(Dsw2026TpiDbContext))]
-    partial class Dsw2026TpiDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260721220646_InitialModel")]
+    partial class InitialModel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -39,10 +42,6 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.Property<DateTime>("FechaDeCancelacion")
                         .HasColumnType("datetime2");
-
-                    b.Property<string>("Motivo")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("PacienteId")
                         .HasColumnType("uniqueidentifier");

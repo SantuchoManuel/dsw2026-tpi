@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Domain.Entities;
+using Dsw2026Tpi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -15,5 +15,6 @@ public class SpecialityConfiguration : IEntityTypeConfiguration<Speciality>
         builder.HasIndex(s => s.Name).IsUnique(); // UNIQUE Constraint
 
         builder.Property(s => s.Description).IsRequired().HasMaxLength(100);
+       
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace Dsw2026Tpi.Domain.Entities;
+namespace Dsw2026Tpi.Domain.Entities;
 
 public abstract class EntityBase(Guid? id = null)
 {
