@@ -9,6 +9,7 @@ namespace Dsw2026Tpi.Domain.Entities
         public DateTime FechaDeAtencion { get; set; }
         public DateTime FechaDeCancelacion { get; set; }
         public CitaEstado CitaEstado { get; set; }
+        public string Motivo { get; set; }
         public Guid? PacienteId { get; set; }
         public Paciente Paciente { get; set; }
         public Guid? TurnoId { get; set; }
