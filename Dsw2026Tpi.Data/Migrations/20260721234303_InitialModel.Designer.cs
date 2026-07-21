@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dsw2026Tpi.Data.Migrations
 {
     [DbContext(typeof(Dsw2026TpiDbContext))]
-    [Migration("20260721185954_InitialModel")]
+    [Migration("20260721234303_InitialModel")]
     partial class InitialModel
     {
         /// <inheritdoc />
@@ -42,6 +42,10 @@ namespace Dsw2026Tpi.Data.Migrations
 
                     b.Property<DateTime>("FechaDeCancelacion")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("Motivo")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid?>("PacienteId")
                         .HasColumnType("uniqueidentifier");
@@ -183,6 +187,9 @@ namespace Dsw2026Tpi.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()

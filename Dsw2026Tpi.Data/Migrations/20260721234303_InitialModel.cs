@@ -123,6 +123,7 @@ namespace Dsw2026Tpi.Data.Migrations
                     FechaDeAtencion = table.Column<DateTime>(type: "datetime2", nullable: false),
                     FechaDeCancelacion = table.Column<DateTime>(type: "datetime2", nullable: false),
                     CitaEstado = table.Column<int>(type: "int", nullable: false),
+                    Motivo = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PacienteId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     TurnoId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
