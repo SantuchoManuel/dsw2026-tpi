@@ -3,6 +3,7 @@ using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dsw2026Tpi.Api.Controllers
 {
@@ -68,5 +69,26 @@ namespace Dsw2026Tpi.Api.Controllers
             await _service.CancelarCitaAsync(id);
             return Ok();
         }
+        [HttpGet]
+        [Authorize(Roles = Roles.Administrator)]
+        public async Task<IActionResult> GetAppointmentsByDate([FromQuery] DateTime date)
+        {
+            var result = await _service.GetAppointmentsByDateAsync(date);
+            return Ok(result);
+        }
+
+        [HttpGet("search")]
+        [Authorize(Roles = Roles.Administrator)] 
+        public async Task<IActionResult> SearchAppointments(
+            [FromQuery] Guid? specialtyId,
+            [FromQuery] Guid? doctorId,
+            [FromQuery] int? dni,
+            [FromQuery] DateTime? date,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10)
+        {
+            var result = await _service.SearchAppointmentsAsync(specialtyId, doctorId, dni, date, page, pageSize);
+            return Ok(result);
+        }
     }
-}
+}   
