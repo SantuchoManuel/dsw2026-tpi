@@ -50,6 +50,7 @@ public class SpecialityService : ISpecialityService
         var speciality = await _persistence.First<Speciality>(s => s.Id == id);
         if (speciality == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
 
+        //aqui se deberia hacer una mini validacion para cambiarlo si fuera diferente y dejarlo de ser iguales o asi
         speciality.Name = request.Name;
         speciality.Description = request.Description;
 
