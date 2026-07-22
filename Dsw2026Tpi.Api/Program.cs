@@ -49,6 +49,7 @@ public class Program
             app.UseAuthentication();
             app.UseAuthorization();
             app.UseCors();
+            app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
             app.MapControllers();

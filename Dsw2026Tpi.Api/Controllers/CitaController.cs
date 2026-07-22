@@ -3,7 +3,6 @@ using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authorization;
 
 namespace Dsw2026Tpi.Api.Controllers
 {
@@ -21,6 +20,7 @@ namespace Dsw2026Tpi.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
         {
+            /*
             if (request.DoctorId == Guid.Empty)
             {
                 return BadRequest("El DoctorId es obligatorio.");
@@ -40,7 +40,10 @@ namespace Dsw2026Tpi.Api.Controllers
             {
                 return BadRequest("El motivo (reason) es obligatorio y debe tener al menos 5 caracteres.");
             }
-            
+            */
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
             await _service.CrearCitaAsync(request);
 
             return Ok();
@@ -63,9 +66,7 @@ namespace Dsw2026Tpi.Api.Controllers
         public async Task<IActionResult> CancelarTurno(Guid id)
         {
             if (id == Guid.Empty)
-            {
                 return BadRequest("ID de cita inválido.");
-            }
             await _service.CancelarCitaAsync(id);
             return Ok();
         }
@@ -76,9 +77,8 @@ namespace Dsw2026Tpi.Api.Controllers
             var result = await _service.GetAppointmentsByDateAsync(date);
             return Ok(result);
         }
-
         [HttpGet("search")]
-        [Authorize(Roles = Roles.Administrator)] 
+        [Authorize(Roles = Roles.Administrator)]
         public async Task<IActionResult> SearchAppointments(
             [FromQuery] Guid? specialtyId,
             [FromQuery] Guid? doctorId,
@@ -91,4 +91,4 @@ namespace Dsw2026Tpi.Api.Controllers
             return Ok(result);
         }
     }
-}   
+}

@@ -21,6 +21,8 @@ public class DoctorController : AppController
     [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
+        if (!string.IsNullOrEmpty(name) && (name.Length < 3 || name.Length > 100))
+            return BadRequest("El parámetro 'name' debe tener entre 3 y 100 caracteres.");
         var result = await _doctorService.GetAll(pageSize, pageIndex, name);
         return Ok(result);
     }
@@ -45,8 +47,8 @@ public class DoctorController : AppController
     [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Create([FromBody] DoctorModel.Request request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             var result = await _doctorService.Create(request);
@@ -62,8 +64,8 @@ public class DoctorController : AppController
     [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Update(Guid id, [FromBody] DoctorModel.Request request)
     {
-        if (!ModelState.IsValid) return BadRequest(ModelState);
-
+        if (!ModelState.IsValid)
+            return BadRequest(ModelState);
         try
         {
             var result = await _doctorService.Update(id, request);

@@ -1,9 +1,12 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Dsw2026Tpi.Api.Controllers
 {
+    [Authorize(Policy = Policies.AdminPolicy)]
     [Route("availabilities")]
     public class DisponibilidadController : AppController
     {
@@ -19,14 +22,9 @@ namespace Dsw2026Tpi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] DisponibilidadModel.Request request)
         {
-            if (request.DoctorId == System.Guid.Empty)
-                return BadRequest("El DoctorId es obligatorio.");
-
-            if (request.Days == null || request.Days.Count == 0)
-                return BadRequest("Debe enviar al menos un día.");
-
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             await _service.CrearDisponibilidadAsync(request);
-
             return Ok();
         }
 
@@ -35,14 +33,9 @@ namespace Dsw2026Tpi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] DisponibilidadModel.Request request)
         {
-            if (request.DoctorId == System.Guid.Empty)
-                return BadRequest("El DoctorId es obligatorio.");
-
-            if (request.Days == null || request.Days.Count == 0)
-                return BadRequest("Debe enviar al menos un día.");
-
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
             await _service.ActualizarDisponibilidadAsync(request);
-
             return Ok();
         }
     }
