@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <!-- 
     Microsoft ResX Schema 
@@ -137,5 +137,14 @@
   </data>
   <data name="VALIDATION_ERROR" xml:space="preserve">
     <value>Uno o más errores de validación ocurrieron</value>
+  </data>
+  <data name="FIELD_REQUIRED" xml:space="preserve">
+    <value>El campo '{0}' es obligatorio</value>
+  </data>
+  <data name="FIELD_LENGTH_INVALID" xml:space="preserve">
+    <value>El campo '{0}' debe tener entre {1} y {2} caracteres</value>
+  </data>
+  <data name="FILTER_INVALID" xml:space="preserve">
+    <value>El parámetro de filtro '{0}' no es válido</value>
   </data>
 </root>

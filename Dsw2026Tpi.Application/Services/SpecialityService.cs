@@ -3,10 +3,11 @@ using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
+using Dsw2026Tpi.CrossCutting.Resources;
 using System;
 using System.Collections.Generic;
-using System.Numerics;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -37,8 +38,6 @@ public class SpecialityService : ISpecialityService
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
 
-  
-
     public async Task<SpecialityModel.Response?> GetById(Guid id)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
@@ -49,24 +48,57 @@ public class SpecialityService : ISpecialityService
     public async Task<SpecialityModel.Response> Update(Guid id, SpecialityModel.Request request)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new EntityNotFoundException("Especialidad"); ;
+        if (speciality == null) throw new EntityNotFoundException("Speciality");
 
-        //aqui se deberia hacer una mini validacion para cambiarlo si fuera diferente y dejarlo de ser iguales o asi
         speciality.Name = request.Name;
         speciality.Description = request.Description;
 
         await _persistence.Update(speciality);
-        //Esto Ya anda, hay q revisar si puedo hacer q la respuesta envie lo nuevo cargado y no lo viejo --- Ademas cambie speciality y lo puse en set y no en init, para poder cambiarlo y que se guarde en la base de datos
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
 
     public async Task Delete(Guid id)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new EntityNotFoundException("Especialidad");
+        if (speciality == null) throw new EntityNotFoundException("Speciality");
 
         speciality.EstablecerDeleted();
         await _persistence.Update(speciality);
     }
-}
 
+    private void ValidateRequest(SpecialityModel.Request request)
+    {
+        var details = new List<(string, string)>();
+
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            details.Add((nameof(request.Name), "required"));
+        }
+        else if (request.Name.Length < 3 || request.Name.Length > 100)
+        {
+            details.Add((nameof(request.Name), "invalid_length"));
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+        {
+            details.Add((nameof(request.Description), "required"));
+        }
+        else if (request.Description.Length < 10 || request.Description.Length > 100)
+        {
+            details.Add((nameof(request.Description), "invalid_length"));
+        }
+
+        if (details.Any())
+        {
+            throw new ValidationException(ErrorCodes.VALIDATION_ERROR, nameof(ErrorCodes.VALIDATION_ERROR))
+                .WithDetail(details.Select(d => (ToCamelCase(d.Item1), d.Item2)));
+        }
+    }
+
+    private static string ToCamelCase(string s)
+    {
+        if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
+            return s;
+        return char.ToLower(s[0]) + s.Substring(1);
+    }
+}

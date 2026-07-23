@@ -1,6 +1,9 @@
 using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.Application.Services;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Identity;
+using Dsw2026Tpi.CrossCutting.Resources;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,8 +23,14 @@ public class SpecialityController : AppController
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
-        if (!string.IsNullOrEmpty(name) && (name.Length < 3 || name.Length > 100)) 
-            return BadRequest("El parámetro 'name' debe tener entre 3 y 100 caracteres.");
+        // Validaciones
+        if (!string.IsNullOrEmpty(name) && (name.Length < 3 || name.Length > 100))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FILTER_INVALID, "name"),
+                nameof(ErrorCodes.FILTER_INVALID)
+            ).WithDetail("name", "filter_length_invalid");
+        }
         
         var speciality = await _service.GetAll(pageSize, pageIndex, name);
         return Ok(speciality);
@@ -32,8 +41,39 @@ public class SpecialityController : AppController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] SpecialityModel.Request request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
+        // Validaciones
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "name"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("name", "required");
+        }
+
+        if (request.Name.Length < 3 || request.Name.Length > 100)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "name", 3, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("name", "length_out_of_range");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "description"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("description", "required");
+        }
+
+        if (request.Description.Length < 10 || request.Description.Length > 100)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "description", 10, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("description", "length_out_of_range");
+        }
+
         var speciality = await _service.Add(request);
         return Ok(speciality);
     }
@@ -43,29 +83,48 @@ public class SpecialityController : AppController
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] SpecialityModel.Request request)
     {
-        if (!ModelState.IsValid)
-            return BadRequest(ModelState);
-        var existing = await _service.GetById(id);
-        if (existing == null)
-            return NotFound($"La especialidad con id {id} no existe.");
-        await _service.Update(id, request);
-        return Ok(existing);
+        // Validaciones
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "name"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("name", "required");
+        }
+
+        if (request.Name.Length < 3 || request.Name.Length > 100)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "name", 3, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("name", "length_out_of_range");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.Description))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "description"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("description", "required");
+        }
+
+        if (request.Description.Length < 10 || request.Description.Length > 100)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "description", 10, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("description", "length_out_of_range");
+        }
+
+        var speciality = await _service.Update(id, request);
+        return Ok(speciality);
     }
 
     [HttpDelete("specialities/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await _service.Delete(id);
-            return NoContent();
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        await _service.Delete(id);
+        return NoContent();
     }
 }
-   
-
