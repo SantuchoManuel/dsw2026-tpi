@@ -1,11 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
-using System.Numerics;
 using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Numerics;
+using System.Text;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -48,7 +49,7 @@ public class SpecialityService : ISpecialityService
     public async Task<SpecialityModel.Response> Update(Guid id, SpecialityModel.Request request)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new KeyNotFoundException("La especialidad seleccionada no existe o fue eliminada.");
+        if (speciality == null) throw new EntityNotFoundException("Especialidad"); ;
 
         //aqui se deberia hacer una mini validacion para cambiarlo si fuera diferente y dejarlo de ser iguales o asi
         speciality.Name = request.Name;
@@ -62,7 +63,7 @@ public class SpecialityService : ISpecialityService
     public async Task Delete(Guid id)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new KeyNotFoundException("La especialidad no existe.");
+        if (speciality == null) throw new EntityNotFoundException("Especialidad");
 
         speciality.EstablecerDeleted();
         await _persistence.Update(speciality);

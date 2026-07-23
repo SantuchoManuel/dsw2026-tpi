@@ -2,6 +2,7 @@
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -20,7 +21,7 @@ namespace Dsw2026Tpi.Application.Services
         public async Task<DisponibilidadModel.Request> CrearDisponibilidadAsync(DisponibilidadModel.Request peticion)
         {
             var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
-            if (doctor == null) { throw new ArgumentException("El médico indicado no existe."); }
+            if (doctor == null) { throw new EntityNotFoundException("Médico"); }
 
             await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
             return peticion;
@@ -29,7 +30,7 @@ namespace Dsw2026Tpi.Application.Services
         public async Task<DisponibilidadModel.Request> ActualizarDisponibilidadAsync(DisponibilidadModel.Request peticion)
         {
             var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
-            if (doctor == null) { throw new ArgumentException("El médico indicado no existe."); }
+            if (doctor == null) { throw new EntityNotFoundException("Médico"); }
 
             var mesActual = DateTime.Now.Month;
             var anioActual = DateTime.Now.Year;
@@ -68,7 +69,7 @@ namespace Dsw2026Tpi.Application.Services
                 var diaDeLaSemana = MapearDiaSemana(diaRequerido.Day);
 
                 if (horaDeInicio >= horaDeFin)
-                    throw new ArgumentException($"Para el día {diaRequerido.Day}, la hora de inicio debe ser menor a la de fin.");
+                    throw new ValidationException($"Para el día {diaRequerido.Day}, la hora de inicio debe ser menor a la de fin.", "HORARIO_INVALIDO");
 
                 var nuevaDisponibilidad = new Disponibilidad(
                     mesActual,
@@ -117,7 +118,7 @@ namespace Dsw2026Tpi.Application.Services
                 "viernes" or "friday" => DayOfWeek.Friday,
                 "sabado" or "sábado" or "saturday" => DayOfWeek.Saturday,
                 "domingo" or "sunday" => DayOfWeek.Sunday,
-                _ => throw new ArgumentException($"El día ingresado no es válido: {dia}")
+                _ => throw new ValidationException($"El día ingresado no es válido: {dia}", "DIA_INVALIDO")
             };
         }
     }

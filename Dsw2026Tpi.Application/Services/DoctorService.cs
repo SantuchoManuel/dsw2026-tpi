@@ -2,6 +2,7 @@
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -34,7 +35,7 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Create(DoctorModel.Request request)
     {
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);//
-        if (specialty == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
+        if (specialty == null) throw new EntityNotFoundException("Especialidad");
 
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, specialty);
@@ -47,12 +48,12 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new KeyNotFoundException("El médico no existe.");
+        if (doctor == null) throw new EntityNotFoundException("Médico");
 
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);
-        if (specialty == null) throw new InvalidOperationException("La especialidad seleccionada no existe.");
+        if (specialty == null) throw new EntityNotFoundException("Especialidad");
 
- 
+
         doctor.Name = request.Name;
         doctor.LicenseNumber = request.LicenseNumber;
         doctor.SpecialityId = request.SpecialityId;
@@ -65,7 +66,7 @@ public class DoctorService : IDoctorService
     public async Task Delete(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new KeyNotFoundException("El médico no existe.");
+        if (doctor == null) throw new EntityNotFoundException("Médico");
 
         doctor.Deactivate();
         await _persistence.Update(doctor);
@@ -74,7 +75,7 @@ public class DoctorService : IDoctorService
     public async Task<List<DoctorModel.AvailabilityResponse>> GetAvailabilities(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new KeyNotFoundException("El médico no existe.");
+        if (doctor == null) throw new EntityNotFoundException("Médico");
 
         var availabilities = await _persistence.GetFiltered<Disponibilidad>(a => a.DoctorId == id);
 
