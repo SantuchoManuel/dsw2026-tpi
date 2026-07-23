@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Dsw2026Tpi.Data.Identity;
 
-public class AuthenticationDbContext: IdentityDbContext
+public class AuthenticationDbContext: IdentityDbContext<ApplicationUser>
 {
     public AuthenticationDbContext(DbContextOptions<AuthenticationDbContext> options)
             : base(options)
@@ -17,7 +17,7 @@ public class AuthenticationDbContext: IdentityDbContext
         base.OnModelCreating(builder);
 
         builder.Entity<ApplicationUser>(b => { b.ToTable("ApplicationUsers"); });
-        builder.Entity<IdentityUser>(b => { b.ToTable("Users"); });
+        //builder.Entity<IdentityUser>(b => { b.ToTable("Users"); });
         builder.Entity<IdentityRole>(b => { b.ToTable("Roles"); });
         builder.Entity<IdentityUserRole<string>>(b => { b.ToTable("UsersRoles"); });
         builder.Entity<IdentityUserClaim<string>>(b => { b.ToTable("UsersClaims"); });

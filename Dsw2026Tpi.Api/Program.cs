@@ -23,7 +23,7 @@ public class Program
             Log.Information("Iniciando aplicación Dsw2026Tpi.Api");
 
             var builder = WebApplication.CreateBuilder(args);
-
+            
             //Configuraciones personalizadas
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
@@ -50,6 +50,7 @@ public class Program
                         }));
             });
             var app = builder.Build();
+            await app.UseAppAdminAsync();
 
             app.UseSerilogRequestLogging();
 

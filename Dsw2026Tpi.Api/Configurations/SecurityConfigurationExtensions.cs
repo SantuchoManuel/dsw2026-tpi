@@ -89,7 +89,7 @@ public static class SecurityConfigurationExtensions
         {
             options.Password = new PasswordOptions
             {
-                RequiredLength = 6,
+                RequiredLength = 8,
                 RequireLowercase = true,
                 RequireUppercase = true,
                 RequireDigit = true,

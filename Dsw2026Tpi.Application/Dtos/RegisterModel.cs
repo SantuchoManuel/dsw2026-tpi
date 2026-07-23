@@ -10,7 +10,7 @@ public record RegisterModel
         [StringLength(256, ErrorMessage = "El email no puede superar 256 caracteres.")]
         string Email,
     [Required(ErrorMessage = "La contraseña es obligatoria.")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "La contraseña debe tener entre 6 y 100 caracteres.")]
+        [StringLength(100, MinimumLength = 8, ErrorMessage = "La contraseña debe tener entre 6 y 100 caracteres.")]
         string Password
 );
     public record Response(string Email);
