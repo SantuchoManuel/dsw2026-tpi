@@ -2,11 +2,12 @@
 
 namespace Dsw2026Tpi.CrossCutting.Models;
 
-public class ErrorResponse
+public record ErrorResponse
 {
-    public string ErrorCode { get; set; }
-    public string Message { get; set; }
+    public string ErrorCode { get; init; }
+    public string Message { get; init; }
 
+   
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<ErrorDetail>? Details { get; set; }
 
@@ -32,14 +33,4 @@ public class ErrorResponse
     }
 }
 
-public class ErrorDetail
-{
-    public string Field { get; set; }
-    public string Issue { get; set; }
-
-    public ErrorDetail(string field, string issue)
-    {
-        Field = field;
-        Issue = issue;
-    }
-}
+public record ErrorDetail(string Field, string Issue);
