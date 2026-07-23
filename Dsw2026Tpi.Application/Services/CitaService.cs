@@ -1,9 +1,9 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Dsw2026Tpi.Application.Services
         public async Task CrearCitaAsync(CitaModel.Request peticion)
         {
             var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
-            if (doctor == null) throw new EntityNotFoundException("Médico");
+            if (doctor == null) throw new EntityNotFoundException("Doctor");
 
             var turno = await _persistence.GetById<Turno>(peticion.AvailabilityId);
             if (turno == null) throw new EntityNotFoundException("Turno");
@@ -32,10 +32,15 @@ namespace Dsw2026Tpi.Application.Services
             var horaActual = TimeOnly.FromDateTime(DateTime.Now);
 
             if (turno.Fecha < hoy || (turno.Fecha == hoy && turno.HoraDeInicio <= horaActual))
-                throw new ValidationException("No se permiten reservar turnos en el pasado.", "TURNO_PASADO");
+                throw new ValidationException(
+                    ErrorCodes.APPOINTMENT_PAST,
+                    nameof(ErrorCodes.APPOINTMENT_PAST));
 
             if ((int)turno.EstadoTurno != 0)
-                throw new ConflictException("TURNO_OCUPADO", "El turno ya no está disponible. Fue reservado por otro paciente.");
+                throw new ConflictException(
+                    nameof(ErrorCodes.APPOINTMENT_CONFLICT),
+                    ErrorCodes.APPOINTMENT_CONFLICT)
+                    .WithDetail("dateTime", "slot_unavailable");
 
             var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == peticion.Patient.Dni);
             var paciente = pacientes.FirstOrDefault();
@@ -51,9 +56,8 @@ namespace Dsw2026Tpi.Application.Services
                 PacienteId = paciente.Id,
                 TurnoId = turno.Id,
                 CitaEstado = CitaEstado.Confirmada,
-                Motivo = peticion.Reason 
+                Motivo = peticion.Reason
             };
-
 
             turno.EstadoTurno = EstadoTurno.BOOKED;
 
@@ -65,7 +69,8 @@ namespace Dsw2026Tpi.Application.Services
         {
             var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == dni);
             var paciente = pacientes.FirstOrDefault();
-            if (paciente == null) throw new EntityNotFoundException("Paciente");
+
+            if (paciente == null) throw new EntityNotFoundException("Patient");
 
             var citas = await _persistence.GetFiltered<Cita>(
                 c => c.PacienteId == paciente.Id && (int)c.CitaEstado == 0,
@@ -80,8 +85,8 @@ namespace Dsw2026Tpi.Application.Services
                 turnosResponse.Add(new CitaModel.Response(
                     cita.Id,
                     fechaYHora,
-                    cita.Turno.Disponibilidad.Doctor.Name, 
-                    cita.Motivo 
+                    cita.Turno.Disponibilidad.Doctor.Name,
+                    cita.Motivo
                 ));
             }
 
@@ -91,13 +96,16 @@ namespace Dsw2026Tpi.Application.Services
         public async Task CancelarCitaAsync(Guid citaId)
         {
             var cita = await _persistence.GetById<Cita>(citaId, "Turno");
-            if (cita == null) throw new EntityNotFoundException("Cita");
+
+            if (cita == null) throw new EntityNotFoundException("Appointment");
 
             if ((int)cita.Turno.EstadoTurno != 1)
-                throw new ConflictException("ESTADO_INVALIDO", "Solo se pueden cancelar turnos que estén reservados.");
+                throw new ConflictException(
+                    nameof(ErrorCodes.INVALID_APPOINTMENT_STATE),
+                    ErrorCodes.INVALID_APPOINTMENT_STATE);
 
             cita.FechaDeCancelacion = DateTime.Now;
-            cita.CitaEstado = (CitaEstado)1; 
+            cita.CitaEstado = CitaEstado.Cancelada;
 
             cita.Turno.EstadoTurno = EstadoTurno.AVAILABLE;
 
@@ -109,7 +117,7 @@ namespace Dsw2026Tpi.Application.Services
             var targetDate = DateOnly.FromDateTime(date);
 
             var citas = await _persistence.GetFiltered<Cita>(
-                c => c.Turno.Fecha == targetDate, "Turno.Disponibilidad.Doctor.Speciality" 
+                c => c.Turno.Fecha == targetDate, "Turno.Disponibilidad.Doctor.Speciality"
             );
 
             return citas.Select(c => new CitaBusquedaModel
@@ -130,7 +138,7 @@ namespace Dsw2026Tpi.Application.Services
                      (!specialtyId.HasValue || c.Turno.Disponibilidad.Doctor.Speciality.Id == specialtyId.Value) &&
                      (!doctorId.HasValue || c.Turno.Disponibilidad.Doctor.Id == doctorId.Value) &&
                      (!dni.HasValue || c.Paciente.Dni == dni.Value),
-                "Turno.Disponibilidad.Doctor.Speciality", "Paciente" 
+                "Turno.Disponibilidad.Doctor.Speciality", "Paciente"
             );
 
             var totalRecords = citas.Count();

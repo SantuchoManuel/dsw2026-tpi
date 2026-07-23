@@ -117,6 +117,12 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="APPOINTMENT_CONFLICT" xml:space="preserve">
+    <value>El turno ya no está disponible. Fue reservado por otro paciente.</value>
+  </data>
+  <data name="APPOINTMENT_PAST" xml:space="preserve">
+    <value>No se permiten reservar turnos en el pasado.</value>
+  </data>
   <data name="AUTHENTICATION_FAILED" xml:space="preserve">
     <value>Usuario o contraseña incorrectos</value>
   </data>
@@ -125,6 +131,9 @@
   </data>
   <data name="ENTITY_NOTFOUND" xml:space="preserve">
     <value>La entidad {0} no se encontró</value>
+  </data>
+  <data name="INVALID_APPOINTMENT_STATE" xml:space="preserve">
+    <value>Solo se pueden cancelar turnos que estén reservados (BOOKED).</value>
   </data>
   <data name="REGISTER_USER_CONFLICT" xml:space="preserve">
     <value>Se produjo un error al registrar el usuario</value>
