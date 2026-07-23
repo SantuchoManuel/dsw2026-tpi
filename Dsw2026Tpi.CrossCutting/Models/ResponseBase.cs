@@ -1,18 +1,45 @@
-﻿namespace Dsw2026Tpi.CrossCutting.Models;
+﻿using System.Text.Json.Serialization;
 
-public record ErrorResponse(string ErrorCode, string Message)
+namespace Dsw2026Tpi.CrossCutting.Models;
+
+public class ErrorResponse
 {
-    public ICollection<ErrorDetail> Details { get; } = [];
+    public string ErrorCode { get; set; }
+    public string Message { get; set; }
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<ErrorDetail>? Details { get; set; }
+
+    public ErrorResponse(string errorCode, string message)
+    {
+        ErrorCode = errorCode;
+        Message = message;
+    }
+
     public void AddDetail(string field, string issue)
     {
+        Details ??= new List<ErrorDetail>();
         Details.Add(new ErrorDetail(field, issue));
     }
+
     public void AddDetail(IEnumerable<(string, string)> details)
     {
+        Details ??= new List<ErrorDetail>();
         foreach (var detail in details)
         {
-            AddDetail(detail.Item1, detail.Item2);
+            Details.Add(new ErrorDetail(detail.Item1, detail.Item2));
         }
     }
 }
-public record ErrorDetail(string Field, string Issue);
+
+public class ErrorDetail
+{
+    public string Field { get; set; }
+    public string Issue { get; set; }
+
+    public ErrorDetail(string field, string issue)
+    {
+        Field = field;
+        Issue = issue;
+    }
+}

@@ -1,11 +1,8 @@
 using Dsw2026Tpi.Api.Configurations;
 using Dsw2026Tpi.Api.Middlewares;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Serilog;
-using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.RateLimiting;
-using Microsoft.AspNetCore.Http;
 
 namespace Dsw2026Tpi.Api;
 
@@ -23,7 +20,7 @@ public class Program
             Log.Information("Iniciando aplicación Dsw2026Tpi.Api");
 
             var builder = WebApplication.CreateBuilder(args);
-            
+
             //Configuraciones personalizadas
             builder.AddSerilogConfiguration();
             builder.Services.AddAppIdentity();
@@ -32,7 +29,7 @@ public class Program
             builder.Services.AddApplicationPersistence(builder.Configuration);
             builder.Services.AddAppCors(builder.Configuration);
             builder.Services.AddAppDependencies();
-            builder.Services.AddControllers();
+            builder.Services.AddAppControllers();
             builder.Services.AddHealthChecks();
 
             builder.Services.AddRateLimiter(options =>
@@ -44,7 +41,7 @@ public class Program
                         factory: partition => new FixedWindowRateLimiterOptions
                         {
                             AutoReplenishment = true,
-                            PermitLimit = 100, 
+                            PermitLimit = 100,
                             QueueLimit = 0,
                             Window = TimeSpan.FromMinutes(1)
                         }));
