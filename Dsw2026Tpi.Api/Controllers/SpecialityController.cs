@@ -77,7 +77,6 @@ public class SpecialityController : AppController
         var speciality = await _service.Add(request);
         return Ok(speciality);
     }
-
     [HttpPut("specialities/{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
