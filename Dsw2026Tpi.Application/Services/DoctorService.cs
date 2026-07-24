@@ -35,7 +35,7 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Create(DoctorModel.Request request)
     {
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);//
-        if (specialty == null) throw new EntityNotFoundException("Especialidad");
+        if (specialty == null) throw new EntityNotFoundException("Especialidad").WithDetail("Speciality", "No Encontrado");
 
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, specialty);
@@ -48,10 +48,10 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new EntityNotFoundException("Médico");
+        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);
-        if (specialty == null) throw new EntityNotFoundException("Especialidad");
+        if (specialty == null) throw new EntityNotFoundException("Especialidad").WithDetail("speciality", "No Encontrado");
 
 
         doctor.Name = request.Name;
@@ -66,7 +66,7 @@ public class DoctorService : IDoctorService
     public async Task Delete(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new EntityNotFoundException("Médico");
+        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
         doctor.Deactivate();
         await _persistence.Update(doctor);
@@ -75,7 +75,7 @@ public class DoctorService : IDoctorService
     public async Task<List<DoctorModel.AvailabilityResponse>> GetAvailabilities(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
-        if (doctor == null) throw new EntityNotFoundException("Médico");
+        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
         var availabilities = await _persistence.GetFiltered<Disponibilidad>(a => a.DoctorId == id);
 
