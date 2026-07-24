@@ -44,11 +44,11 @@ public class SpecialityService : ISpecialityService
         if (speciality == null) return null;
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
-
+        
     public async Task<SpecialityModel.Response> Update(Guid id, SpecialityModel.Request request)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new EntityNotFoundException("Speciality");
+        if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "No Encontrada");
 
         speciality.Name = request.Name;
         speciality.Description = request.Description;
@@ -60,45 +60,10 @@ public class SpecialityService : ISpecialityService
     public async Task Delete(Guid id)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
-        if (speciality == null) throw new EntityNotFoundException("Speciality");
+        if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "Not Found");
 
         speciality.EstablecerDeleted();
         await _persistence.Update(speciality);
     }
 
-    private void ValidateRequest(SpecialityModel.Request request)
-    {
-        var details = new List<(string, string)>();
-
-        if (string.IsNullOrWhiteSpace(request.Name))
-        {
-            details.Add((nameof(request.Name), "required"));
-        }
-        else if (request.Name.Length < 3 || request.Name.Length > 100)
-        {
-            details.Add((nameof(request.Name), "invalid_length"));
-        }
-
-        if (string.IsNullOrWhiteSpace(request.Description))
-        {
-            details.Add((nameof(request.Description), "required"));
-        }
-        else if (request.Description.Length < 10 || request.Description.Length > 100)
-        {
-            details.Add((nameof(request.Description), "invalid_length"));
-        }
-
-        if (details.Any())
-        {
-            throw new ValidationException(ErrorCodes.VALIDATION_ERROR, nameof(ErrorCodes.VALIDATION_ERROR))
-                .WithDetail(details.Select(d => (ToCamelCase(d.Item1), d.Item2)));
-        }
-    }
-
-    private static string ToCamelCase(string s)
-    {
-        if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
-            return s;
-        return char.ToLower(s[0]) + s.Substring(1);
-    }
 }
