@@ -21,26 +21,17 @@ public class DoctorController : AppController
     [Authorize]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
-        if (!string.IsNullOrEmpty(name) && (name.Length < 3 || name.Length > 100))
-            return BadRequest("El parámetro 'name' debe tener entre 3 y 100 caracteres.");
         var result = await _doctorService.GetAll(pageSize, pageIndex, name);
         return Ok(result);
     }
 
     [HttpGet("{id:guid}/availabilities")]
     [Authorize]
-
     public async Task<IActionResult> GetAvailabilities(Guid id)
     {
-        try
-        {
-            var result = await _doctorService.GetAvailabilities(id);
-            return Ok(result);
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        var result = await _doctorService.GetAvailabilities(id);
+        return Ok(result);
+
     }
 
     [HttpPost]
@@ -64,14 +55,8 @@ public class DoctorController : AppController
     [Authorize(Policy = Policies.AdminPolicy)]
     public async Task<IActionResult> Delete(Guid id)
     {
-        try
-        {
-            await _doctorService.Delete(id);
-            return NoContent();
-        }
-        catch (KeyNotFoundException ex)
-        {
-            return NotFound(new { message = ex.Message });
-        }
+        await _doctorService.Delete(id);
+        return NoContent();
     }
+
 }

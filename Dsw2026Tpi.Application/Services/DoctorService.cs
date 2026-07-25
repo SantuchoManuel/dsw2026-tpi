@@ -1,8 +1,9 @@
 ﻿using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
-using Dsw2026Tpi.CrossCutting.Exceptions;
 
 namespace Dsw2026Tpi.Application.Services;
 
@@ -18,6 +19,14 @@ public class DoctorService : IDoctorService
 
     public async Task<Pagination<DoctorModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
     {
+        if (!string.IsNullOrWhiteSpace(name) && (name.Length < 3 || name.Length > 100))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "name", 3, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("name", "length_out_of_range");
+        }
+
         var doctors = await _persistence.Paginate<Doctor, string>(
             pageSize,
             pageIndex,
@@ -34,6 +43,7 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorModel.Response> Create(DoctorModel.Request request)
     {
+        ValidateRequest(request);
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);//
         if (specialty == null) throw new EntityNotFoundException("Especialidad").WithDetail("Speciality", "No Encontrado");
 
@@ -47,6 +57,7 @@ public class DoctorService : IDoctorService
 
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
     {
+        ValidateRequest(request);
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
@@ -99,5 +110,47 @@ public class DoctorService : IDoctorService
             doctor.LicenseNumber,
             new DoctorModel.SpecialityDto(doctor.Speciality?.Id, doctor.Speciality?.Name)
         );
+    }
+    private static void ValidateRequest(DoctorModel.Request request)
+    {
+        if (string.IsNullOrWhiteSpace(request.Name))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "name"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("name", "Es requerido");
+        }
+
+        if (request.Name.Length < 3 || request.Name.Length > 100)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "name", 3, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("name", "La longitud es inválida");
+        }
+
+        if (string.IsNullOrWhiteSpace(request.LicenseNumber))
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "licenseNumber"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("licenseNumber", "Es requerido");
+        }
+
+        if (request.LicenseNumber.Length < 3 || request.LicenseNumber.Length > 50)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "licenseNumber", 3, 50),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("licenseNumber", "La longitud es inválida");
+        }
+
+        if (request.SpecialityId == Guid.Empty)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "specialityId"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("specialityId", "Es requerido");
+        }
     }
 }
