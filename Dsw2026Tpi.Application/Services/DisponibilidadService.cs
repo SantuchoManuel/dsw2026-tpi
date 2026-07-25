@@ -1,11 +1,12 @@
-﻿using Dsw2026Tpi.Application.Dtos;
-using Dsw2026Tpi.Application.Interfaces;
-using Dsw2026Tpi.Domain.Entities;
-using Dsw2026Tpi.Domain.Interfaces;
-using Dsw2026Tpi.CrossCutting.Exceptions;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Interfaces;
+using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Resources;
+using Dsw2026Tpi.Domain.Entities;
+using Dsw2026Tpi.Domain.Interfaces;
 
 namespace Dsw2026Tpi.Application.Services
 {
@@ -20,8 +21,10 @@ namespace Dsw2026Tpi.Application.Services
 
         public async Task<DisponibilidadModel.Request> CrearDisponibilidadAsync(DisponibilidadModel.Request peticion)
         {
+            ValidarPeticion(peticion);
+
             var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
-            if (doctor == null) { throw new EntityNotFoundException("Médico"); }
+            if (doctor == null) { throw new EntityNotFoundException("Médico").WithDetail("Medico", "No encontrado"); }
 
             await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
             return peticion;
@@ -29,8 +32,10 @@ namespace Dsw2026Tpi.Application.Services
 
         public async Task<DisponibilidadModel.Request> ActualizarDisponibilidadAsync(DisponibilidadModel.Request peticion)
         {
+            ValidarPeticion(peticion);
+
             var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
-            if (doctor == null) { throw new EntityNotFoundException("Médico"); }
+            if (doctor == null) { throw new EntityNotFoundException("Médico").WithDetail("Medico", "No encontrado"); }
 
             var mesActual = DateTime.Now.Month;
             var anioActual = DateTime.Now.Year;
@@ -55,8 +60,51 @@ namespace Dsw2026Tpi.Application.Services
             return peticion;
         }
 
+        private static void ValidarPeticion(DisponibilidadModel.Request peticion)
+        {
+            if (peticion.DoctorId == Guid.Empty)
+            {
+                throw new ValidationException(
+                    string.Format(ErrorCodes.FIELD_REQUIRED, "DoctorId"),
+                    nameof(ErrorCodes.FIELD_REQUIRED)).WithDetail("DoctorId", "Es requerido");
+            }
+
+            if (peticion.Days == null || peticion.Days.Count == 0)
+            {
+                throw new ValidationException(
+                    string.Format(ErrorCodes.FIELD_REQUIRED, "Días"),
+                    nameof(ErrorCodes.FIELD_REQUIRED)).WithDetail("Días", "Es requerido");
+            }
+        }
+
         private async Task GenerarDisponibilidades(Guid doctorId, List<DisponibilidadModel.EsquemaDia> diasPedidos)
         {
+            for (int i = 0; i < diasPedidos.Count; i++)
+            {
+                var dia1 = diasPedidos[i];
+                var inicio1 = TimeOnly.Parse(dia1.StartTime);
+                var fin1 = TimeOnly.Parse(dia1.EndTime);
+
+                for (int j = i + 1; j < diasPedidos.Count; j++)
+                {
+                    var dia2 = diasPedidos[j];
+
+                    if (dia1.Day.Trim().Equals(dia2.Day.Trim(), StringComparison.OrdinalIgnoreCase))
+                    {
+                        var inicio2 = TimeOnly.Parse(dia2.StartTime);
+                        var fin2 = TimeOnly.Parse(dia2.EndTime);
+
+                        if (inicio1 < fin2 && fin1 > inicio2)
+                        {
+                            throw new ValidationException(
+                                string.Format(ErrorCodes.FILTER_INVALID, "Dias"),
+                                nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Dia", "Los Horarios No son Validos, debido a su solapamiento");
+
+                        }
+                    }
+                }
+            }
+
             var hoy = DateTime.Now.Date;
             var anioActual = hoy.Year;
             var mesActual = hoy.Month;
@@ -69,7 +117,24 @@ namespace Dsw2026Tpi.Application.Services
                 var diaDeLaSemana = MapearDiaSemana(diaRequerido.Day);
 
                 if (horaDeInicio >= horaDeFin)
-                    throw new ValidationException($"Para el día {diaRequerido.Day}, la hora de inicio debe ser menor a la de fin.", "HORARIO_INVALIDO");
+                {
+                    throw new ValidationException(
+                    string.Format(ErrorCodes.FILTER_INVALID, "EndTime"),
+                    nameof(ErrorCodes.FILTER_INVALID)).WithDetail("EndTime", "La StartTime debe ser menor que EndTime");
+                }
+
+                var disponibilidadesExistentes = await _persistence.GetFiltered<Disponibilidad>(d =>
+                    d.DoctorId == doctorId &&
+                    d.Mes == mesActual &&
+                    d.Año == anioActual &&
+                    d.DiaDeLaSemana == diaDeLaSemana &&
+                    d.HoraDeEntrada == horaDeInicio &&
+                    d.HoraDeSalida == horaDeFin);
+
+                if (disponibilidadesExistentes.Any())
+                {
+                    continue;
+                }
 
                 var nuevaDisponibilidad = new Disponibilidad(
                     mesActual,
@@ -118,7 +183,7 @@ namespace Dsw2026Tpi.Application.Services
                 "viernes" or "friday" => DayOfWeek.Friday,
                 "sabado" or "sábado" or "saturday" => DayOfWeek.Saturday,
                 "domingo" or "sunday" => DayOfWeek.Sunday,
-                _ => throw new ValidationException($"El día ingresado no es válido: {dia}", "DIA_INVALIDO")
+                _ => throw new ValidationException(string.Format(ErrorCodes.FILTER_INVALID, "Dia"), nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Dia", "No es Valido")
             };
         }
     }
