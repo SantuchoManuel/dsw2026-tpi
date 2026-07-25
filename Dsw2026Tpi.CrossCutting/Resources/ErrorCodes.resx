@@ -147,4 +147,19 @@
   <data name="FILTER_INVALID" xml:space="preserve">
     <value>El parámetro de filtro '{0}' no es válido</value>
   </data>
+  <data name="FIELD_INVALID" xml:space="preserve">
+    <value>El campo '{0}' tiene un formato o valor inválido</value>
+  </data>
+  <data name="APPOINTMENT_CONFLICT" xml:space="preserve">
+    <value>Slot already booked</value>
+  </data>
+  <data name="TURNO_PASADO" xml:space="preserve">
+    <value>No se permiten reservar turnos en fechas u horarios pasados</value>
+  </data>
+  <data name="TURNO_OCUPADO" xml:space="preserve">
+    <value>El turno ya no está disponible. Fue confirmado por otro paciente</value>
+  </data>
+  <data name="ESTADO_INVALIDO" xml:space="preserve">
+    <value>El estado actual del turno no permite realizar esta operación</value>
+  </data>
 </root>
