@@ -34,10 +34,10 @@ public class CitaService : ICitaService
         var horaActual = TimeOnly.FromDateTime(DateTime.Now);
 
         if (turno.Fecha < hoy || (turno.Fecha == hoy && turno.HoraDeInicio <= horaActual))
-            throw new ValidationException("No se permiten reservar turnos en el pasado.", "TURNO_PASADO").WithDetail("DateTime", "Slot invalid");
+            throw new ValidationException(ErrorCodes.TURNO_PASADO, nameof(ErrorCodes.TURNO_PASADO)).WithDetail("DateTime", "Slot invalid");
 
         if ((int)turno.EstadoTurno != 0)
-            throw new ConflictException("APPOINTMENT_CONFLICT", "Slot already booked").WithDetail("AvailabilityId", "El turno ya no está disponible.");
+            throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_CONFLICT), ErrorCodes.APPOINTMENT_CONFLICT).WithDetail("AvailabilityId", "El turno ya no está disponible.");
 
         var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == request.Patient.Dni);
         var paciente = pacientes.FirstOrDefault();
@@ -66,7 +66,10 @@ public class CitaService : ICitaService
     {
         if (dni <= 0)
         {
-            throw new ValidationException("DNI inválido", "FIELD_INVALID").WithDetail("dni", "Debe ser mayor a cero");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_INVALID, "Dni"),
+                nameof(ErrorCodes.FIELD_INVALID)
+            ).WithDetail("dni", "Debe ser mayor a cero");
         }
 
         var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == dni);
@@ -92,7 +95,7 @@ public class CitaService : ICitaService
         if (cita == null) throw new EntityNotFoundException("Cita").WithDetail("Cita", "No Encontrada");
 
         if ((int)cita.Turno.EstadoTurno != 1)
-            throw new ConflictException("ESTADO_INVALIDO", "Solo se pueden cancelar turnos que estén reservados.").WithDetail("EstadoTurno", "Estado no válido para cancelación");
+            throw new ConflictException(nameof(ErrorCodes.ESTADO_INVALIDO), ErrorCodes.ESTADO_INVALIDO).WithDetail("EstadoTurno", "Estado no válido para cancelación");
 
         cita.FechaDeCancelacion = DateTime.Now;
         cita.CitaEstado = (CitaEstado)1;
@@ -152,27 +155,42 @@ public class CitaService : ICitaService
     {
         if (request.DoctorId == Guid.Empty)
         {
-            throw new ValidationException("El DoctorId es obligatorio", "FIELD_REQUIRED").WithDetail("DoctorId", "Es requerido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "DoctorId"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("DoctorId", "Es requerido");
         }
 
         if (request.AvailabilityId == Guid.Empty)
         {
-            throw new ValidationException("El AvailabilityId es obligatorio", "FIELD_REQUIRED").WithDetail("AvailabilityId", "Es requerido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "AvailabilityId"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("AvailabilityId", "Es requerido");
         }
 
         if (request.Patient == null || request.Patient.Dni.ToString().Length < 7 || request.Patient.Dni.ToString().Length > 10)
         {
-            throw new ValidationException("El DNI del paciente es obligatorio y debe tener entre 7 y 10 dígitos", "FIELD_INVALID").WithDetail("Patient.Dni", "Longitud es inválida");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_INVALID, "Patient.Dni"),
+                nameof(ErrorCodes.FIELD_INVALID)
+            ).WithDetail("Patient.Dni", "Longitud es inválida");
         }
 
         if (string.IsNullOrWhiteSpace(request.Reason))
         {
-            throw new ValidationException("El motivo es obligatorio", "FIELD_REQUIRED").WithDetail("Reason", "Es requerido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "Reason"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("Reason", "Es requerido");
         }
 
         if (request.Reason.Length < 5 || request.Reason.Length > 500)
         {
-            throw new ValidationException("El motivo debe tener entre 5 y 500 caracteres", "FIELD_LENGTH_INVALID").WithDetail("Reason", "La longitud es inválida");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "Reason", 5, 500),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("Reason", "La longitud es inválida");
         }
     }
 }

@@ -2,6 +2,7 @@
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Threading.Tasks;
@@ -42,7 +43,7 @@ public class CitaController : AppController
     public async Task<IActionResult> CancelarTurno(Guid id)
     {
         await _service.CancelarCitaAsync(id);
-        return Ok(); 
+        return Ok();
     }
 
     [Authorize(Roles = Roles.Administrator)]

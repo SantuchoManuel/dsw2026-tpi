@@ -127,11 +127,18 @@ public class AuthenticationService : IAuthenticationService
     {
         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.IsEmailValid())
         {
-            throw new ValidationException("Formato de correo inválido", "FIELD_INVALID").WithDetail("Email", "Formato inválido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_INVALID, "Email"),
+                nameof(ErrorCodes.FIELD_INVALID)
+            ).WithDetail("Email", "Formato de correo inválido");
         }
+
         if (string.IsNullOrWhiteSpace(request.Password))
         {
-            throw new ValidationException("La contraseña es requerida", "FIELD_REQUIRED").WithDetail("Password", "Requerida");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "Password"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("Password", "Es requerido");
         }
     }
 
@@ -139,13 +146,19 @@ public class AuthenticationService : IAuthenticationService
     {
         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.IsEmailValid())
         {
-            throw new ValidationException("Formato de correo inválido", "FIELD_INVALID").WithDetail("Email", "Formato inválido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_INVALID, "Email"),
+                nameof(ErrorCodes.FIELD_INVALID)
+            ).WithDetail("Email", "Formato de correo inválido");
         }
 
         var dniString = request.Dni.ToString();
         if (dniString.Length < 7 || dniString.Length > 8)
         {
-            throw new ValidationException("El DNI debe tener 7 u 8 dígitos", "FIELD_INVALID").WithDetail("Dni", "Longitud inválida");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "Dni", 7, 8),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("Dni", "La longitud es inválida");
         }
     }
 
@@ -153,11 +166,26 @@ public class AuthenticationService : IAuthenticationService
     {
         if (string.IsNullOrWhiteSpace(request.Email) || !request.Email.IsEmailValid())
         {
-            throw new ValidationException("Formato de correo inválido", "FIELD_INVALID").WithDetail("Email", "Formato inválido");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_INVALID, "Email"),
+                nameof(ErrorCodes.FIELD_INVALID)
+            ).WithDetail("Email", "Formato de correo inválido");
         }
-        if (string.IsNullOrWhiteSpace(request.Password) || request.Password.Length < 8)
+
+        if (string.IsNullOrWhiteSpace(request.Password))
         {
-            throw new ValidationException("La contraseña debe tener mínimo 8 caracteres", "FIELD_INVALID").WithDetail("Password", "Mínimo 8 caracteres requeridos");
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_REQUIRED, "Password"),
+                nameof(ErrorCodes.FIELD_REQUIRED)
+            ).WithDetail("Password", "Es requerido");
+        }
+
+        if (request.Password.Length < 8)
+        {
+            throw new ValidationException(
+                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "Password", 8, 100),
+                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
+            ).WithDetail("Password", "La longitud es inválida");
         }
     }
 }

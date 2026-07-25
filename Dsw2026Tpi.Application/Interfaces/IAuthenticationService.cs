@@ -9,3 +9,4 @@ public interface IAuthenticationService
     Task<LoginAdminModel.Response> LoginAdmin(LoginAdminModel.Request request);
     Task<LoginPatientModel.Response> LoginPatient(LoginPatientModel.Request request);
 }
+
