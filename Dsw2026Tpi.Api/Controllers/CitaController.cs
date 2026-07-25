@@ -3,92 +3,69 @@ using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
+using System.Threading.Tasks;
 
-namespace Dsw2026Tpi.Api.Controllers
+namespace Dsw2026Tpi.Api.Controllers;
+
+public class CitaController : AppController
 {
-    [Route("appointments")]
-    public class CitaController : AppController
+    private readonly ICitaService _service;
+
+    public CitaController(ICitaService service)
     {
-        private readonly ICitaService _service;
+        _service = service;
+    }
 
-        public CitaController(ICitaService service)
-        {
-            _service = service;
-        }
+    [Authorize(Policy = Policies.PatientPolicy)]
+    [HttpPost("appointments")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
+    {
+        await _service.CrearCitaAsync(request);
+        return Ok();
+    }
 
-        [Authorize(Policy = Policies.PatientPolicy)]
-        [HttpPost]
-        public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
-        {
-            /*
-            if (request.DoctorId == Guid.Empty)
-            {
-                return BadRequest("El DoctorId es obligatorio.");
-            }
-            if (request.AvailabilityId == Guid.Empty)
-            {
-                return BadRequest("El AvailabilityId es obligatorio.");
-            }
+    [Authorize(Policy = Policies.PatientPolicy)]
+    [HttpGet("appointments/patient")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
+    {
+        var turnos = await _service.ObtenerTurnosPacienteAsync(dni);
+        return Ok(turnos);
+    }
 
-            var dniString = request.Patient?.Dni.ToString();
-            if (string.IsNullOrEmpty(dniString) || dniString.Length < 7 || dniString.Length > 10)
-            {
-                return BadRequest("DNI obligatorio y debe tener entre 7 y 10 dígitos.");
-            }
-                
-            if (string.IsNullOrWhiteSpace(request.Reason) || request.Reason.Length < 5)
-            {
-                return BadRequest("El motivo (reason) es obligatorio y debe tener al menos 5 caracteres.");
-            }
-            */
-            if (!ModelState.IsValid)
-                return BadRequest(ModelState);
+    [Authorize(Policy = Policies.PatientPolicy)]
+    [HttpDelete("appointments/{id}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> CancelarTurno(Guid id)
+    {
+        await _service.CancelarCitaAsync(id);
+        return Ok(); 
+    }
 
-            await _service.CrearCitaAsync(request);
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpGet("appointments")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> GetAppointmentsByDate([FromQuery] DateTime date)
+    {
+        var result = await _service.GetAppointmentsByDateAsync(date);
+        return Ok(result);
+    }
 
-            return Ok();
-        }
-
-        [Authorize(Policy = Policies.PatientPolicy)]
-        [HttpGet("patient")]
-        public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
-        {
-            if (dni <= 0)
-            {
-                return BadRequest("DNI inválido.");
-            } 
-            var turnos = await _service.ObtenerTurnosPacienteAsync(dni);
-            return Ok(turnos);
-        }
-
-        [Authorize(Policy = Policies.PatientPolicy)]
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> CancelarTurno(Guid id)
-        {
-            if (id == Guid.Empty)
-                return BadRequest("ID de cita inválido.");
-            await _service.CancelarCitaAsync(id);
-            return Ok();
-        }
-        [HttpGet]
-        [Authorize(Roles = Roles.Administrator)]
-        public async Task<IActionResult> GetAppointmentsByDate([FromQuery] DateTime date)
-        {
-            var result = await _service.GetAppointmentsByDateAsync(date);
-            return Ok(result);
-        }
-        [HttpGet("search")]
-        [Authorize(Roles = Roles.Administrator)]
-        public async Task<IActionResult> SearchAppointments(
-            [FromQuery] Guid? specialtyId,
-            [FromQuery] Guid? doctorId,
-            [FromQuery] int? dni,
-            [FromQuery] DateTime? date,
-            [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
-        {
-            var result = await _service.SearchAppointmentsAsync(specialtyId, doctorId, dni, date, page, pageSize);
-            return Ok(result);
-        }
+    [Authorize(Roles = Roles.Administrator)]
+    [HttpGet("appointments/search")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    public async Task<IActionResult> SearchAppointments(
+        [FromQuery] int pageSize = 10,
+        [FromQuery] int pageIndex = 1,
+        [FromQuery] Guid? specialtyId = null,
+        [FromQuery] Guid? doctorId = null,
+        [FromQuery] int? dni = null,
+        [FromQuery] DateTime? date = null)
+    {
+        var result = await _service.SearchAppointmentsAsync(specialtyId, doctorId, dni, date, pageIndex, pageSize);
+        return Ok(result);
     }
 }
