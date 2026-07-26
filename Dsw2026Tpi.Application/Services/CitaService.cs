@@ -4,6 +4,7 @@ using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
 using Dsw2026Tpi.CrossCutting.Resources;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,10 +15,12 @@ namespace Dsw2026Tpi.Application.Services;
 public class CitaService : ICitaService
 {
     private readonly IPersistence _persistence;
+    private readonly ILogger<CitaService> _logger;
 
-    public CitaService(IPersistence persistence)
+    public CitaService(IPersistence persistence, ILogger<CitaService> logger)
     {
         _persistence = persistence;
+        _logger = logger;
     }
 
     public async Task CrearCitaAsync(CitaModel.Request request)
@@ -46,6 +49,7 @@ public class CitaService : ICitaService
         {
             paciente = new Paciente(request.Patient.Dni, "Sin Email", "Sin Nombre", "Sin Celular");
             await _persistence.Add(paciente);
+            _logger.LogInformation("Paciente creado automáticamente durante la reserva. DNI: {Dni}", request.Patient.Dni);
         }
 
         var nuevaCita = new Cita(DateTime.Now, DateTime.MinValue, null)
@@ -60,6 +64,8 @@ public class CitaService : ICitaService
 
         await _persistence.Add(nuevaCita);
         await _persistence.Update(turno);
+
+        _logger.LogInformation("Turno {TurnoId} reservado exitosamente por el paciente DNI {Dni}.", turno.Id, request.Patient.Dni);
     }
 
     public async Task<List<CitaModel.Response>> ObtenerTurnosPacienteAsync(int dni)
@@ -104,6 +110,8 @@ public class CitaService : ICitaService
 
         await _persistence.Update(cita);
         await _persistence.Update(cita.Turno);
+
+        _logger.LogInformation("La cita {CitaId} fue cancelada exitosamente. Turno liberado.", id);
     }
 
     public async Task<IEnumerable<CitaModel.BusquedaResponse>> GetAppointmentsByDateAsync(DateTime date)

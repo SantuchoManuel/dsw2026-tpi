@@ -7,16 +7,19 @@ using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Resources;
 using Dsw2026Tpi.Domain.Entities;
 using Dsw2026Tpi.Domain.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace Dsw2026Tpi.Application.Services
 {
     public class DisponibilidadService : IDisponibilidadService
     {
         private readonly IPersistence _persistence;
+        private readonly ILogger<DisponibilidadService> _logger;
 
-        public DisponibilidadService(IPersistence persistence)
+        public DisponibilidadService(IPersistence persistence, ILogger<DisponibilidadService> logger)
         {
             _persistence = persistence;
+            _logger = logger;
         }
 
         public async Task<DisponibilidadModel.Request> CrearDisponibilidadAsync(DisponibilidadModel.Request peticion)
@@ -27,6 +30,9 @@ namespace Dsw2026Tpi.Application.Services
             if (doctor == null) { throw new EntityNotFoundException("Médico").WithDetail("Medico", "No encontrado"); }
 
             await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
+
+            _logger.LogInformation("Se generaron nuevas disponibilidades para el doctor con ID {DoctorId}.", peticion.DoctorId);
+
             return peticion;
         }
 
@@ -57,6 +63,9 @@ namespace Dsw2026Tpi.Application.Services
             }
 
             await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
+
+            _logger.LogInformation("Se eliminaron y regeneraron las disponibilidades para el doctor con ID {DoctorId}.", peticion.DoctorId);
+
             return peticion;
         }
 
