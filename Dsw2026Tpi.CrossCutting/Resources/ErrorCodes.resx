@@ -162,4 +162,7 @@
   <data name="ESTADO_INVALIDO" xml:space="preserve">
     <value>El estado actual del turno no permite realizar esta operación</value>
   </data>
+  <data name="TOO_MANY_REQUESTS" xml:space="preserve">
+    <value>Se ha superado el límite de solicitudes permitidas.</value>
+  </data>
 </root>

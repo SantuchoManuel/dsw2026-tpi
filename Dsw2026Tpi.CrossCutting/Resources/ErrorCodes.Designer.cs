@@ -160,6 +160,15 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         }
         
         /// <summary>
+        ///   Busca una cadena traducida similar a Se ha superado el límite de solicitudes permitidas..
+        /// </summary>
+        public static string TOO_MANY_REQUESTS {
+            get {
+                return ResourceManager.GetString("TOO_MANY_REQUESTS", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Busca una cadena traducida similar a El turno ya no está disponible. Fue confirmado por otro paciente.
         /// </summary>
         public static string TURNO_OCUPADO {
