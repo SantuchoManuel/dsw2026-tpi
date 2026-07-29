@@ -4,6 +4,7 @@ using Dsw2026Tpi.CrossCutting.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System;
 using System.Threading.Tasks;
 
@@ -18,6 +19,7 @@ public class CitaController : AppController
         _service = service;
     }
 
+    [EnableRateLimiting("TurnosPolicy")]
     [Authorize(Policy = Policies.PatientPolicy)]
     [HttpPost("appointments")]
     [ProducesResponseType(StatusCodes.Status200OK)]

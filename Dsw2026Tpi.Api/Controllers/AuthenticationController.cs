@@ -3,6 +3,7 @@ using Dsw2026Tpi.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using System.Threading.Tasks;
 
 namespace Dsw2026Tpi.Api.Controllers;
@@ -27,6 +28,7 @@ public class AuthenticationController : AppController
         return Ok(result.Email);
     }
 
+    [EnableRateLimiting("AdminAuthPolicy")]
     [HttpPost("admin/login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
@@ -36,6 +38,7 @@ public class AuthenticationController : AppController
         return Ok(result);
     }
 
+    [EnableRateLimiting("PatientAuthPolicy")]
     [HttpPost("patient/login")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
