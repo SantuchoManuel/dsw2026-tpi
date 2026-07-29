@@ -39,20 +39,8 @@ public class Program
             });
             builder.Services.AddHealthChecks();
 
-            builder.Services.AddRateLimiter(options =>
-            {
-                options.RejectionStatusCode = StatusCodes.Status429TooManyRequests;
-                options.GlobalLimiter = PartitionedRateLimiter.Create<HttpContext, string>(httpContext =>
-                    RateLimitPartition.GetFixedWindowLimiter(
-                        partitionKey: httpContext.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-                        factory: partition => new FixedWindowRateLimiterOptions
-                        {
-                            AutoReplenishment = true,
-                            PermitLimit = 100, 
-                            QueueLimit = 0,
-                            Window = TimeSpan.FromMinutes(1)
-                        }));
-            });
+            builder.Services.AddAppRateLimiter();
+
             var app = builder.Build();
             await app.UseAppAdminAsync();
 
