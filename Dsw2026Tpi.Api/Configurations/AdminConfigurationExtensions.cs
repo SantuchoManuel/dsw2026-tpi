@@ -1,4 +1,5 @@
-﻿using Dsw2026Tpi.CrossCutting.Identity;
+﻿using Dsw2026Tpi.CrossCutting.Exceptions;
+using Dsw2026Tpi.CrossCutting.Identity;
 using Dsw2026Tpi.Data.Identity;
 using Microsoft.AspNetCore.Identity;
 
@@ -6,8 +7,6 @@ namespace Dsw2026Tpi.Api.Configurations
 {
     public static class AdminSeederConfigurationExtensions
     {
-        // Fijate que usamos WebApplication en vez de IServiceCollection
-        // y lo hacemos "async Task" porque usamos "await" adentro.
         public static async Task UseAppAdminAsync(this WebApplication app)
         {
             using (var scope = app.Services.CreateScope())
@@ -15,14 +14,20 @@ namespace Dsw2026Tpi.Api.Configurations
                 var userManager = scope.ServiceProvider.GetRequiredService<UserManager<ApplicationUser>>();
                 var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole>>();
 
-                // 1. Aseguramos que existe el rol Administrador
                 if (!await roleManager.RoleExistsAsync(Roles.Administrator))
                 {
                     await roleManager.CreateAsync(new IdentityRole(Roles.Administrator));
                 }
 
-                // 2. Creamos al usuario Administrador si no existe
-                var adminEmail = "admin@hospital.com";
+                var adminEmail = app.Configuration["AdminSettings:Email"];
+                var adminPassword = app.Configuration["AdminSettings:Password"];
+
+
+                if (string.IsNullOrEmpty(adminEmail) || string.IsNullOrEmpty(adminPassword))
+                {
+                    throw new ValidationException("Faltan las credenciales del Administrador en el appsettings.json", "AUTHENTICATION_FAILED");
+                }
+
                 if (await userManager.FindByEmailAsync(adminEmail) == null)
                 {
                     var adminUser = new ApplicationUser
@@ -33,7 +38,7 @@ namespace Dsw2026Tpi.Api.Configurations
                         UpdatedAt = DateTime.UtcNow
                     };
 
-                    var result = await userManager.CreateAsync(adminUser, "Admin1234");
+                    var result = await userManager.CreateAsync(adminUser, adminPassword);
                     if (result.Succeeded)
                     {
                         await userManager.AddToRoleAsync(adminUser, Roles.Administrator);
