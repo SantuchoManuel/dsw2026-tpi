@@ -15,6 +15,8 @@ public static class DependencyInjectionConfigurationExtensions
         services.AddScoped<ISpecialityService, SpecialityService>();
         services.AddScoped<IDisponibilidadService, DisponibilidadService>();
         services.AddScoped<ICitaService, CitaService>();
+        services.AddSingleton<IFeriadoService, FeriadoService>();
+        services.AddSingleton(TimeProvider.System);
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<ISignInService, SignInService>();
         services.AddSingleton<JwtService>();

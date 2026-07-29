@@ -1,0 +1,116 @@
+[
+  {
+    "fecha": "2026-01-01",
+    "dia_semana": "Jueves",
+    "motivo": "Año Nuevo",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-02-16",
+    "dia_semana": "Lunes",
+    "motivo": "Carnaval",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-02-17",
+    "dia_semana": "Martes",
+    "motivo": "Carnaval",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-03-23",
+    "dia_semana": "Lunes",
+    "motivo": "Feriado con fines turísticos",
+    "tipo": "Feriado puente"
+  },
+  {
+    "fecha": "2026-03-24",
+    "dia_semana": "Martes",
+    "motivo": "Día Nacional de la Memoria por la Verdad y la Justicia",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-04-02",
+    "dia_semana": "Jueves",
+    "motivo": "Día del Veterano y de los Caídos en la Guerra de Malvinas",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-04-03",
+    "dia_semana": "Viernes",
+    "motivo": "Viernes Santo",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-05-01",
+    "dia_semana": "Viernes",
+    "motivo": "Día del Trabajador",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-05-25",
+    "dia_semana": "Lunes",
+    "motivo": "Día de la Revolución de Mayo",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-06-15",
+    "dia_semana": "Lunes",
+    "motivo": "Paso a la Inmortalidad del Gral. Don Martín Miguel de Güemes",
+    "tipo": "Feriado trasladable"
+  },
+  {
+    "fecha": "2026-06-20",
+    "dia_semana": "Sábado",
+    "motivo": "Paso a la Inmortalidad del Gral. Manuel Belgrano",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-07-09",
+    "dia_semana": "Jueves",
+    "motivo": "Día de la Independencia",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-07-10",
+    "dia_semana": "Viernes",
+    "motivo": "Feriado con fines turísticos",
+    "tipo": "Feriado puente"
+  },
+  {
+    "fecha": "2026-08-17",
+    "dia_semana": "Lunes",
+    "motivo": "Paso a la Inmortalidad del Gral. José de San Martín",
+    "tipo": "Feriado trasladable"
+  },
+  {
+    "fecha": "2026-10-12",
+    "dia_semana": "Lunes",
+    "motivo": "Día del Respeto a la Diversidad Cultural",
+    "tipo": "Feriado trasladable"
+  },
+  {
+    "fecha": "2026-11-23",
+    "dia_semana": "Lunes",
+    "motivo": "Día de la Soberanía Nacional",
+    "tipo": "Feriado trasladable"
+  },
+  {
+    "fecha": "2026-12-07",
+    "dia_semana": "Lunes",
+    "motivo": "Feriado con fines turísticos",
+    "tipo": "Feriado puente"
+  },
+  {
+    "fecha": "2026-12-08",
+    "dia_semana": "Martes",
+    "motivo": "Día de la Inmaculada Concepción de María",
+    "tipo": "Feriado inamovible"
+  },
+  {
+    "fecha": "2026-12-25",
+    "dia_semana": "Viernes",
+    "motivo": "Navidad",
+    "tipo": "Feriado inamovible"
+  }
+]
