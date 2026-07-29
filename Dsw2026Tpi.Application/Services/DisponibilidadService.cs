@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
@@ -15,7 +16,20 @@ namespace Dsw2026Tpi.Application.Services
     {
         private readonly IPersistence _persistence;
         private readonly ILogger<DisponibilidadService> _logger;
+        private readonly IFeriadoService _feriadoService;
+        private readonly TimeProvider _timeProvider;
 
+        public DisponibilidadService(
+            IPersistence persistence,
+            ILogger<DisponibilidadService> logger,
+            IFeriadoService feriadoService,
+            TimeProvider timeProvider)
+        {
+            _persistence = persistence;
+            _logger = logger;
+            _feriadoService = feriadoService;
+            _timeProvider = timeProvider;
+        }
         public DisponibilidadService(IPersistence persistence, ILogger<DisponibilidadService> logger)
         {
             _persistence = persistence;
@@ -113,8 +127,8 @@ namespace Dsw2026Tpi.Application.Services
                     }
                 }
             }
-
-            var hoy = DateTime.Now.Date;
+            //var hoy = DateTime.Now.Date; este teniamos antes
+            var hoy = _timeProvider.GetLocalNow().Date;
             var anioActual = hoy.Year;
             var mesActual = hoy.Month;
             var cantidadDiasDelMes = DateTime.DaysInMonth(anioActual, mesActual);
@@ -162,6 +176,11 @@ namespace Dsw2026Tpi.Application.Services
 
                     if (fechaActual.DayOfWeek == diaDeLaSemana)
                     {
+                        if (_feriadoService.EsFeriado(fechaActual))
+                        {
+                            _logger.LogInformation("Día omitido: No se generaron turnos para el {Fecha} por ser feriado nacional.", fechaActual.ToString("dd/MM/yyyy"));
+                            continue; 
+                        }
                         var relojInterno = horaDeInicio;
 
                         while (relojInterno < horaDeFin)
