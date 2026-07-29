@@ -33,9 +33,9 @@ public class SpecialityService : ISpecialityService
         var specialities = await _persistence.Paginate<Speciality, string>(
             pageSize,
             pageIndex,
-            s => (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)) && s.IsDeleted == false,
+            s => (string.IsNullOrWhiteSpace(name) || s.Name.Contains(name)) && !s.Deleted,
             x => x.Name);
-
+         
         return specialities.Map(s => new SpecialityModel.Response(s.Id, s.Name, s.Description));
     }
 
@@ -50,7 +50,7 @@ public class SpecialityService : ISpecialityService
 
     public async Task<SpecialityModel.Response?> GetById(Guid id)
     {
-        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && !s.Deleted);
         if (speciality == null) return null;
         return new SpecialityModel.Response(speciality.Id, speciality.Name, speciality.Description);
     }
@@ -59,7 +59,7 @@ public class SpecialityService : ISpecialityService
     {
         ValidateRequest(request);
 
-        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && !s.Deleted);
         if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "No Encontrada");
 
         speciality.Name = request.Name;
@@ -71,10 +71,10 @@ public class SpecialityService : ISpecialityService
 
     public async Task Delete(Guid id)
     {
-        var speciality = await _persistence.First<Speciality>(s => s.Id == id && s.IsDeleted == false);
+        var speciality = await _persistence.First<Speciality>(s => s.Id == id && !s.Deleted);
         if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "Not Found");
 
-        speciality.EstablecerDeleted();
+        speciality.MarcarComoEliminado();
         await _persistence.Update(speciality);
     }
 
