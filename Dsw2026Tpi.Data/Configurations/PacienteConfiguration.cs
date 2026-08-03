@@ -24,5 +24,6 @@ public class PacienteConfiguration : IEntityTypeConfiguration<Paciente>
 
         builder.Property(p => p.Cellnumber)
                .HasMaxLength(20);
+        builder.HasQueryFilter(p => !p.Deleted);
     }
 }

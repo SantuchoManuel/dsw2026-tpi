@@ -24,6 +24,7 @@ namespace Dsw2026Tpi.Data.Configurations
                    .WithMany()
                    .HasForeignKey(d => d.DoctorId)
                    .OnDelete(DeleteBehavior.Restrict);
+            builder.HasQueryFilter(d => !d.Deleted);
         }
     }
 

@@ -5,7 +5,7 @@ using System.Text;
 namespace Dsw2026Tpi.Domain.Entities
 {
 
-    public class Turno : EntityBase
+    public class Turno : DeleteEntityBase
     {
         public DateOnly Fecha { get; set; }
         public TimeOnly HoraDeInicio { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Dsw2026Tpi.Domain.Entities;
 
-public class Doctor: EntityBase
+public class Doctor: DeleteEntityBase
 {
     public string Name { get; set; }
     public string LicenseNumber { get; set; }

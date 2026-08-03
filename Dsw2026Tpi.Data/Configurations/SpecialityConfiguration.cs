@@ -12,9 +12,10 @@ public class SpecialityConfiguration : IEntityTypeConfiguration<Speciality>
         builder.HasKey(s => s.Id);
 
         builder.Property(s => s.Name).IsRequired().HasMaxLength(100);
-        builder.HasIndex(s => s.Name).IsUnique(); // UNIQUE Constraint
+        builder.HasIndex(s => s.Name).IsUnique(); 
 
         builder.Property(s => s.Description).IsRequired().HasMaxLength(100);
-       
+        builder.HasQueryFilter(s => !s.Deleted);
+
     }
 }

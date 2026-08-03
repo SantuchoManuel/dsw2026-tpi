@@ -11,6 +11,7 @@ public class DoctorConfiguration : IEntityTypeConfiguration<Doctor>
         builder.ToTable("Doctors");
         builder.HasKey(d => d.Id);
         builder.Property(d => d.Name).IsRequired().HasMaxLength(100);
-        builder.Property(d => d.LicenseNumber).HasMaxLength(50); // NULL
+        builder.Property(d => d.LicenseNumber).HasMaxLength(50);
+        builder.HasQueryFilter(d => !d.Deleted);
     }
 }

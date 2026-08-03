@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    public class Paciente : EntityBase
+    public class Paciente : DeleteEntityBase
     {
         public int Dni { get; set; }
         public string Email { get; set; }

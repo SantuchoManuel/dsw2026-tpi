@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    public class Disponibilidad : EntityBase
+    public class Disponibilidad : DeleteEntityBase
     {
         public int Mes { get; set; }
         public int Año { get; set; }
