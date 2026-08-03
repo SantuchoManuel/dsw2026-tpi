@@ -7,8 +7,7 @@ using Microsoft.AspNetCore.RateLimiting;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
-[Route("doctors")]
-
+[Route("api/doctors")]
 public class DoctorController : AppController
 {
     private readonly IDoctorService _doctorService;
