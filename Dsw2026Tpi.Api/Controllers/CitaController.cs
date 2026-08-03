@@ -26,8 +26,8 @@ public class CitaController : AppController
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
     {
-        await _service.CrearCitaAsync(request);
-        return Ok();
+        var result = await _service.CrearCitaAsync(request);
+        return Ok(result);
     }
 
     [Authorize(Policy = Policies.PatientPolicy)]

@@ -23,7 +23,7 @@ public class CitaService : ICitaService
         _logger = logger;
     }
 
-    public async Task CrearCitaAsync(CitaModel.Request request)
+    public async Task<CitaModel.Response> CrearCitaAsync(CitaModel.Request request)
     {
         ValidateRequest(request);
 
@@ -66,6 +66,13 @@ public class CitaService : ICitaService
         await _persistence.Update(turno);
 
         _logger.LogInformation("Turno {TurnoId} reservado exitosamente por el paciente DNI {Dni}.", turno.Id, request.Patient.Dni);
+
+        return new CitaModel.Response(
+        nuevaCita.Id,
+        turno.Fecha.ToDateTime(turno.HoraDeInicio),
+        doctor.Name,
+        nuevaCita.Motivo
+    );
     }
 
     public async Task<List<CitaModel.Response>> ObtenerTurnosPacienteAsync(int dni)
@@ -201,4 +208,5 @@ public class CitaService : ICitaService
             ).WithDetail("Reason", "La longitud es inválida");
         }
     }
+
 }
