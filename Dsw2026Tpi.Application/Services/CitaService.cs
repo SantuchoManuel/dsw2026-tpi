@@ -119,25 +119,27 @@ public class CitaService : ICitaService
         var targetDate = DateOnly.FromDateTime(date);
 
         var citas = await _persistence.GetFiltered<Cita>(
-            c => c.Turno.Fecha == targetDate, "Turno.Disponibilidad.Doctor.Speciality"
+            c => c.Turno.Fecha == targetDate, "Turno.Disponibilidad.Doctor.Speciality", "Paciente"
         );
 
         return citas.Select(c => new CitaModel.BusquedaResponse(
-            c.Turno.Disponibilidad.Doctor.Speciality.Name ?? c.Turno.Disponibilidad.Doctor.Speciality.Name,
-            c.Turno.Disponibilidad.Doctor.Name ?? c.Turno.Disponibilidad.Doctor.Name,
-            $"{c.Turno.Fecha:yyyy-MM-dd} {c.Turno.HoraDeInicio}"
+            c.Turno.Disponibilidad.Doctor.Speciality.Name,
+            c.Turno.Disponibilidad.Doctor.Name,
+            $"{c.Turno.Fecha:yyyy-MM-dd} {c.Turno.HoraDeInicio}",
+            c.Paciente.Name ?? "Sin Nombre", 
+            c.Paciente.Dni.ToString() 
         )).ToList();
     }
 
-    public async Task<Pagination<CitaModel.BusquedaResponse>> SearchAppointmentsAsync(
-        Guid? specialtyId, Guid? doctorId, int? dni, DateTime? date, int pageIndex, int pageSize)
+    public async Task<Pagination<CitaModel.SearchResponse>> SearchAppointmentsAsync(
+         Guid? specialtyId, Guid? doctorId, int? dni, DateTime? date, int pageIndex, int pageSize)
     {
         DateOnly? targetDate = date.HasValue ? DateOnly.FromDateTime(date.Value) : null;
 
         var citas = await _persistence.GetFiltered<Cita>(
             c => (!targetDate.HasValue || c.Turno.Fecha == targetDate.Value) &&
-                 (!specialtyId.HasValue || c.Turno.Disponibilidad.Doctor.Speciality.Id == specialtyId.Value) &&
-                 (!doctorId.HasValue || c.Turno.Disponibilidad.Doctor.Id == doctorId.Value) &&
+                 (!specialtyId.HasValue || c.Turno.Disponibilidad.Doctor.SpecialityId == specialtyId.Value) &&
+                 (!doctorId.HasValue || c.Turno.Disponibilidad.DoctorId == doctorId.Value) &&
                  (!dni.HasValue || c.Paciente.Dni == dni.Value),
             "Turno.Disponibilidad.Doctor.Speciality", "Paciente"
         );
@@ -147,16 +149,25 @@ public class CitaService : ICitaService
         var items = citas
             .Skip((pageIndex - 1) * pageSize)
             .Take(pageSize)
-            .Select(c => new CitaModel.BusquedaResponse(
-                c.Turno.Disponibilidad.Doctor.Speciality.Name ?? c.Turno.Disponibilidad.Doctor.Speciality.Name,
-                c.Turno.Disponibilidad.Doctor.Name ?? c.Turno.Disponibilidad.Doctor.Name,
-                $"{c.Turno.Fecha:yyyy-MM-dd} {c.Turno.HoraDeInicio}",
-                c.Paciente.Name,
-                c.Paciente.Dni.ToString()
+            .Select(c => new CitaModel.SearchResponse(
+                c.Id,
+                c.CitaEstado.ToString(),
+                new CitaModel.PatientSearchDto(
+                    c.Paciente.Dni,
+                    c.Paciente.Name ?? string.Empty
+                ),
+                new CitaModel.DoctorSearchDto(
+                    c.Turno.Disponibilidad.Doctor.Id,
+                    c.Turno.Disponibilidad.Doctor.Name,
+                    new CitaModel.SpecialtySearchDto(
+                        c.Turno.Disponibilidad.Doctor.Speciality.Id,
+                        c.Turno.Disponibilidad.Doctor.Speciality.Name
+                    )
+                )
             ))
             .ToList();
 
-        return new Pagination<CitaModel.BusquedaResponse>(pageSize, pageIndex, totalRecords, items);
+        return new Pagination<CitaModel.SearchResponse>(pageSize, pageIndex, totalRecords, items);
     }
 
     private static void ValidateRequest(CitaModel.Request request)

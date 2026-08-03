@@ -42,7 +42,7 @@ public class Program
             builder.Services.AddAppRateLimiter();
 
             var app = builder.Build();
-            await app.UseAppAdminAsync();
+            //await app.UseAppAdminAsync();
 
             app.UseSerilogRequestLogging();
 
