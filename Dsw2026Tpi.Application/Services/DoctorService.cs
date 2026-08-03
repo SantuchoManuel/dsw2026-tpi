@@ -88,21 +88,19 @@ public class DoctorService : IDoctorService
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
-        var turnos = await _persistence.GetFiltered<Turno>(
-            t => t.Disponibilidad.DoctorId == id && (int)t.EstadoTurno == 0,
-            "Disponibilidad" 
+        var mesActual = DateTime.Now.Month;
+        var anioActual = DateTime.Now.Year;
+
+        var disponibilidades = await _persistence.GetFiltered<Disponibilidad>(
+            a => a.DoctorId == id && a.Mes == mesActual && a.Año == anioActual
         );
 
-        return turnos?.Select(t => new DoctorModel.AvailabilityResponse(
-            t.Id, 
-            t.Fecha.ToString("yyyy-MM-dd"), 
-            t.Fecha.DayOfWeek.ToString(),
-            t.HoraDeInicio.ToString("HH:mm"),
-            t.HoraDeFin.ToString("HH:mm")
-        ))
-        .OrderBy(t => t.Date)
-        .ThenBy(t => t.StartTime)
-        .ToList() ?? new List<DoctorModel.AvailabilityResponse>();
+        return disponibilidades?.Select(a => new DoctorModel.AvailabilityResponse(
+            a.Id,
+            a.DiaDeLaSemana.ToString(),
+            a.HoraDeEntrada.ToString("HH:mm"),
+            a.HoraDeSalida.ToString("HH:mm")
+        )).ToList() ?? new List<DoctorModel.AvailabilityResponse>();
     }
 
     private async Task<DoctorModel.Response> GetByIdInternal(Guid id)
