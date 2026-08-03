@@ -42,14 +42,14 @@ public class CitaService : ICitaService
         if ((int)turno.EstadoTurno != 0)
             throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_CONFLICT), ErrorCodes.APPOINTMENT_CONFLICT).WithDetail("AvailabilitySlotId", "El turno ya no está disponible.");
 
-        var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == request.Patient.Dni);
-        var paciente = pacientes.FirstOrDefault();
+        var paciente = await _persistence.First<Paciente>(p => p.Dni == request.Patient.Dni);
 
         if (paciente == null)
         {
-            paciente = new Paciente(request.Patient.Dni, "Sin Email", "Sin Nombre", "Sin Celular");
-            await _persistence.Add(paciente);
-            _logger.LogInformation("Paciente creado automáticamente durante la reserva. DNI: {Dni}", request.Patient.Dni);
+            throw new ValidationException(
+                string.Format(ErrorCodes.FILTER_INVALID, "Patient.Dni"),
+                nameof(ErrorCodes.FILTER_INVALID)
+            ).WithDetail("Patient.Dni", "El paciente con este DNI no existe. Debe iniciar sesión primero.");
         }
 
         var nuevaCita = new Cita(DateTime.Now, DateTime.MinValue, null)
