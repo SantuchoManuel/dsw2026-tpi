@@ -72,21 +72,38 @@ public class AuthenticationService : IAuthenticationService
 
         var patient = await _persistence.First<Paciente>(p => p.Dni == request.Dni);
 
-        if (patient == null)
+        if (patient != null)
         {
+            if (patient.Email != request.Email)
+            {
+                throw new ValidationException(
+                    string.Format(ErrorCodes.FIELD_INVALID, "Credenciales"),
+                    nameof(ErrorCodes.FIELD_INVALID)
+                ).WithDetail("Login", "El DNI ingresado ya está registrado con otro correo electrónico.");
+            }
+        }
+        else
+        {
+            var emailInUse = await _persistence.First<Paciente>(p => p.Email == request.Email);
+
+            if (emailInUse != null)
+            {
+                throw new ValidationException(
+                    string.Format(ErrorCodes.FIELD_INVALID, "Credenciales"),
+                    nameof(ErrorCodes.FIELD_INVALID)
+                ).WithDetail("Login", "Este correo electrónico ya está asociado a otro DNI.");
+            }
+
             patient = new Paciente(
                 request.Dni,
                 request.Email,
                 "Sin Nombre",
                 "Sin Celular"
             );
-
             await _persistence.Add(patient);
-            _logger.LogInformation("Paciente creado automáticamente. DNI: {Dni}", request.Dni);
         }
 
         var token = _jwtService.GenerateToken(request.Email, Roles.Patient);
-
         return new LoginPatientModel.Response(token, Roles.Patient);
     }
 
