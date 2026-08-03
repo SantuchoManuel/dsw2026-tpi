@@ -30,7 +30,7 @@ public class DoctorService : IDoctorService
         var doctors = await _persistence.Paginate<Doctor, string>(
             pageSize,
             pageIndex,
-            d => (string.IsNullOrWhiteSpace(name) || d.Name.Contains(name)) && d.IsActive,
+            d => (string.IsNullOrWhiteSpace(name) || d.Name.Contains(name)) && d.IsActive && !d.Deleted,
             x => x.Name,
             nameof(Doctor.Speciality));
 
@@ -58,7 +58,7 @@ public class DoctorService : IDoctorService
     public async Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request)
     {
         ValidateRequest(request);
-        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
+        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);
@@ -76,16 +76,16 @@ public class DoctorService : IDoctorService
 
     public async Task Delete(Guid id)
     {
-        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
+        var doctor = await _persistence.First<Doctor>(d => d.Id == id && !d.Deleted);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
-        doctor.Deactivate();
+        doctor.MarcarComoEliminado();
         await _persistence.Update(doctor);
     }
 
     public async Task<List<DoctorModel.AvailabilityResponse>> GetAvailabilities(Guid id)
     {
-        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive);
+        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
 
         var mesActual = DateTime.Now.Month;
