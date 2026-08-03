@@ -31,7 +31,7 @@ public class CitaService : ICitaService
         if (doctor == null) throw new EntityNotFoundException("Doctor").WithDetail("DoctorId", "No Encontrado");
 
         var turno = await _persistence.GetById<Turno>(request.AvailabilitySlotId);
-        if (turno == null) throw new EntityNotFoundException("Turno").WithDetail("AvailabilityId", "No Encontrado");
+        if (turno == null) throw new EntityNotFoundException("Turno").WithDetail("AvailabilitySlotId", "No Encontrado");
 
         var hoy = DateOnly.FromDateTime(DateTime.Now);
         var horaActual = TimeOnly.FromDateTime(DateTime.Now);
@@ -40,7 +40,7 @@ public class CitaService : ICitaService
             throw new ValidationException(ErrorCodes.TURNO_PASADO, nameof(ErrorCodes.TURNO_PASADO)).WithDetail("DateTime", "Slot invalido");
 
         if ((int)turno.EstadoTurno != 0)
-            throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_CONFLICT), ErrorCodes.APPOINTMENT_CONFLICT).WithDetail("AvailabilityId", "El turno ya no está disponible.");
+            throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_CONFLICT), ErrorCodes.APPOINTMENT_CONFLICT).WithDetail("AvailabilitySlotId", "El turno ya no está disponible.");
 
         var pacientes = await _persistence.GetFiltered<Paciente>(p => p.Dni == request.Patient.Dni);
         var paciente = pacientes.FirstOrDefault();
@@ -192,7 +192,7 @@ public class CitaService : ICitaService
             throw new ValidationException(
                 string.Format(ErrorCodes.FIELD_REQUIRED, "AvailabilitySlotId"),
                 nameof(ErrorCodes.FIELD_REQUIRED)
-            ).WithDetail("AvailabilityId", "Es requerido");
+            ).WithDetail("AvailabilitySlotId", "Es requerido");
         }
 
         if (request.Patient == null || request.Patient.Dni.ToString().Length < 7 || request.Patient.Dni.ToString().Length > 10)
