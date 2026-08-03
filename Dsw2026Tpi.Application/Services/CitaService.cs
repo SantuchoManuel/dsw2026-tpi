@@ -30,7 +30,7 @@ public class CitaService : ICitaService
         var doctor = await _persistence.GetById<Doctor>(request.DoctorId);
         if (doctor == null) throw new EntityNotFoundException("Doctor").WithDetail("DoctorId", "No Encontrado");
 
-        var turno = await _persistence.GetById<Turno>(request.AvailabilityId);
+        var turno = await _persistence.GetById<Turno>(request.AvailabilitySlotId);
         if (turno == null) throw new EntityNotFoundException("Turno").WithDetail("AvailabilityId", "No Encontrado");
 
         var hoy = DateOnly.FromDateTime(DateTime.Now);
@@ -187,10 +187,10 @@ public class CitaService : ICitaService
             ).WithDetail("DoctorId", "Es requerido");
         }
 
-        if (request.AvailabilityId == Guid.Empty)
+        if (request.AvailabilitySlotId == Guid.Empty)
         {
             throw new ValidationException(
-                string.Format(ErrorCodes.FIELD_REQUIRED, "AvailabilityId"),
+                string.Format(ErrorCodes.FIELD_REQUIRED, "AvailabilitySlotId"),
                 nameof(ErrorCodes.FIELD_REQUIRED)
             ).WithDetail("AvailabilityId", "Es requerido");
         }
