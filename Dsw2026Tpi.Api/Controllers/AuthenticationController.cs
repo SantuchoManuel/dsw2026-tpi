@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
-[Route("auth")]
+[Route("api/auth")]
 [AllowAnonymous]
 public class AuthenticationController : AppController
 {

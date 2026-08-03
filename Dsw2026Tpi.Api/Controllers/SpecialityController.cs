@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [Authorize(Policy = Policies.AdminPolicy)]
+[Route("api/specialities")]
+
 public class SpecialityController : AppController
 {
     private readonly ISpecialityService _service;
@@ -16,7 +18,7 @@ public class SpecialityController : AppController
         _service = service;
     }
 
-    [HttpGet("specialitiespageSize=&pageIndex=&name=")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAll([FromQuery] int pageSize = 10, [FromQuery] int pageIndex = 1, [FromQuery] string? name = null)
     {
@@ -24,7 +26,7 @@ public class SpecialityController : AppController
         return Ok(speciality);
     }
 
-    [HttpPost("specialities")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> Create([FromBody] SpecialityModel.Request request)
@@ -33,7 +35,7 @@ public class SpecialityController : AppController
         return Ok(speciality);
     }
 
-    [HttpPut("specialities/{id}")]
+    [HttpPut("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> Update(Guid id, [FromBody] SpecialityModel.Request request)
@@ -42,7 +44,7 @@ public class SpecialityController : AppController
         return Ok(speciality);
     }
 
-    [HttpDelete("specialities/{id}")]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> Delete(Guid id)
     {

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 namespace Dsw2026Tpi.Api.Controllers;
 
+[Route("api/appointments")]
 public class CitaController : AppController
 {
     private readonly ICitaService _service;
@@ -21,7 +22,7 @@ public class CitaController : AppController
 
     [EnableRateLimiting("TurnosPolicy")]
     [Authorize(Policy = Policies.PatientPolicy)]
-    [HttpPost("appointments")]
+    [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
@@ -31,7 +32,7 @@ public class CitaController : AppController
     }
 
     [Authorize(Policy = Policies.PatientPolicy)]
-    [HttpGet("appointments/patient")]
+    [HttpGet("patient")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
     {
@@ -40,7 +41,7 @@ public class CitaController : AppController
     }
 
     [Authorize(Policy = Policies.PatientPolicy)]
-    [HttpDelete("appointments/{id}")]
+    [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> CancelarTurno(Guid id)
     {
@@ -49,7 +50,7 @@ public class CitaController : AppController
     }
 
     [Authorize(Roles = Roles.Administrator)]
-    [HttpGet("appointments")]
+    [HttpGet]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> GetAppointmentsByDate([FromQuery] DateTime date)
     {
@@ -58,7 +59,7 @@ public class CitaController : AppController
     }
 
     [Authorize(Roles = Roles.Administrator)]
-    [HttpGet("appointments/search")]
+    [HttpGet("search")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<IActionResult> SearchAppointments(
         [FromQuery] int pageSize = 10,
