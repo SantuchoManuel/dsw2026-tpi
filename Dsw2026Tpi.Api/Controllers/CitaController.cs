@@ -46,7 +46,7 @@ public class CitaController : AppController
     public async Task<IActionResult> CancelarTurno(Guid id)
     {
         await _service.CancelarCitaAsync(id);
-        return Ok();
+        return Ok("Okay");
     }
 
     [Authorize(Roles = Roles.Administrator)]
