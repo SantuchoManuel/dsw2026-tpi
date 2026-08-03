@@ -8,8 +8,7 @@ namespace Dsw2026Tpi.Application.Interfaces
 {
     public interface ICitaService
     {
-        Task CrearCitaAsync(CitaModel.Request peticion);
-        Task<List<CitaModel.Response>> ObtenerTurnosPacienteAsync(int dni);
+        Task<CitaModel.Response> CrearCitaAsync(CitaModel.Request request); Task<List<CitaModel.Response>> ObtenerTurnosPacienteAsync(int dni);
         Task CancelarCitaAsync(Guid citaId);
         Task<IEnumerable<CitaModel.BusquedaResponse>> GetAppointmentsByDateAsync(DateTime date);
         Task<Pagination<CitaModel.SearchResponse>> SearchAppointmentsAsync(Guid? specialtyId, Guid? doctorId, int? dni, DateTime? date, int pageIndex, int pageSize);

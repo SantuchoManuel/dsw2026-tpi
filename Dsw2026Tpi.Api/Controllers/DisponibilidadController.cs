@@ -24,8 +24,8 @@ namespace Dsw2026Tpi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] DisponibilidadModel.Request request)
         {
-            await _service.CrearDisponibilidadAsync(request);
-            return Ok();
+            var result = await _service.CrearDisponibilidadAsync(request);
+            return Ok(result);
         }
 
         [HttpPut]
@@ -33,8 +33,8 @@ namespace Dsw2026Tpi.Api.Controllers
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromBody] DisponibilidadModel.Request request)
         {
-            await _service.ActualizarDisponibilidadAsync(request);
-            return Ok();
+            var result = await _service.ActualizarDisponibilidadAsync(request);
+            return Ok(result);
         }
     }
 }
