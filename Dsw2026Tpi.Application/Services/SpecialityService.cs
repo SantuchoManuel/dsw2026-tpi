@@ -72,7 +72,7 @@ public class SpecialityService : ISpecialityService
     public async Task Delete(Guid id)
     {
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && !s.Deleted);
-        if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "Not Found");
+        if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "No encontrada");
 
         speciality.MarcarComoEliminado();
         await _persistence.Update(speciality);

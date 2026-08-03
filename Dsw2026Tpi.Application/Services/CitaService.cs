@@ -37,7 +37,7 @@ public class CitaService : ICitaService
         var horaActual = TimeOnly.FromDateTime(DateTime.Now);
 
         if (turno.Fecha < hoy || (turno.Fecha == hoy && turno.HoraDeInicio <= horaActual))
-            throw new ValidationException(ErrorCodes.TURNO_PASADO, nameof(ErrorCodes.TURNO_PASADO)).WithDetail("DateTime", "Slot invalid");
+            throw new ValidationException(ErrorCodes.TURNO_PASADO, nameof(ErrorCodes.TURNO_PASADO)).WithDetail("DateTime", "Slot invalido");
 
         if ((int)turno.EstadoTurno != 0)
             throw new ConflictException(nameof(ErrorCodes.APPOINTMENT_CONFLICT), ErrorCodes.APPOINTMENT_CONFLICT).WithDetail("AvailabilityId", "El turno ya no está disponible.");
