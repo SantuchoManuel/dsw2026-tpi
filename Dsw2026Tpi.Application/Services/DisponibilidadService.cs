@@ -59,6 +59,8 @@ namespace Dsw2026Tpi.Application.Services
 
             var mesActual = DateTime.Now.Month;
             var anioActual = DateTime.Now.Year;
+            var hoy = DateOnly.FromDateTime(DateTime.Now);
+            var horaActual = TimeOnly.FromDateTime(DateTime.Now);
 
             var disponibilidadesViejas = await _persistence.GetFiltered<Disponibilidad>(r =>
                 r.DoctorId == peticion.DoctorId &&
@@ -68,17 +70,39 @@ namespace Dsw2026Tpi.Application.Services
             foreach (var disponibilidad in disponibilidadesViejas)
             {
                 var turnosViejos = await _persistence.GetFiltered<Turno>(s => s.DisponibilidadId == disponibilidad.Id);
+
+                bool todosBorrados = true;
+
                 foreach (var turno in turnosViejos)
                 {
-                    await _persistence.Delete(turno);
+                   
+                    bool esFuturo = turno.Fecha > hoy || (turno.Fecha == hoy && turno.HoraDeInicio > horaActual);
+
+                    
+                    bool noReservado = (int)turno.EstadoTurno == 0;
+
+                    if (esFuturo && noReservado)
+                    {
+                        
+                        await _persistence.Delete(turno);
+                    }
+                    else
+                    {
+                        
+                        todosBorrados = false;
+                    }
                 }
 
-                await _persistence.Delete(disponibilidad);
+                if (todosBorrados)
+                {
+                    await _persistence.Delete(disponibilidad);
+                }
             }
 
+           
             await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
 
-            _logger.LogInformation("Se eliminaron y regeneraron las disponibilidades para el doctor con ID {DoctorId}.", peticion.DoctorId);
+            _logger.LogInformation("Se actualizaron las disponibilidades futuras no reservadas para el doctor con ID {DoctorId}.", peticion.DoctorId);
 
             return peticion;
         }
