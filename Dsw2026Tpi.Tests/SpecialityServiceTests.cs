@@ -18,6 +18,22 @@ public class SpecialityServiceTests
 {
     private readonly IPersistence _mockPersistence = Substitute.For<IPersistence>();
 
+    [Fact]
+    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadSinDescripcion_EntoncesSeLanzaUnaValidationExcepcion()
+    {
+        var speciality = new SpecialityService(_mockPersistence);
+        var request = new SpecialityModel.Request("Especialidad sin Descripción", "");
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await speciality.Add(request);
+        });
+
+        Assert.Equal(nameof(ErrorCodes.FIELD_REQUIRED), exception.Error.ErrorCode);
+        Assert.Equal(string.Format(ErrorCodes.FIELD_REQUIRED, "description"), exception.Error.Message);
+        await _mockPersistence.DidNotReceive().Add(Arg.Any<Speciality>());
+    }
+
     [Theory]
     [InlineData("Ca", "Especialidad con nombre demasiado corto")]
     [InlineData("C", "Especialidad con nombre demasiado corto")]
