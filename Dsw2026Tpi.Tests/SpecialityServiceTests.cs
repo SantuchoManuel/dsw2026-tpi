@@ -52,4 +52,20 @@ public class SpecialityServiceTests
         Assert.Equal(string.Format(ErrorCodes.FIELD_LENGTH_INVALID,"name", 3, 100), exception.Error.Message);
         await _mockPersistence.DidNotReceive().Add(Arg.Any<Speciality>());
     }
+    [Fact]
+    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadSinNombre_EntoncesSeLanzaUnaValidationExcepcion()
+    {
+        var speciality = new SpecialityService(_mockPersistence);
+        var request = new SpecialityModel.Request("", "Especialidad sin nombre");
+
+        var exception = await Assert.ThrowsAsync<ValidationException>(async () =>
+        {
+            await speciality.Add(request);
+        });
+
+        Assert.Equal(nameof(ErrorCodes.FIELD_REQUIRED), exception.Error.ErrorCode);
+        Assert.Equal(string.Format(ErrorCodes.FIELD_REQUIRED, "name"), exception.Error.Message);
+
+        await _mockPersistence.DidNotReceive().Add(Arg.Any<Speciality>());
+    }
 }
