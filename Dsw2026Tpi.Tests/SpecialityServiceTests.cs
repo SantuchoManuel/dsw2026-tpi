@@ -19,6 +19,23 @@ public class SpecialityServiceTests
     private readonly IPersistence _mockPersistence = Substitute.For<IPersistence>();
 
     [Fact]
+    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadConNombreYDescripcion_EntoncesSeGuardaEnLaBaseDeDatos()
+    {
+        var speciality = new SpecialityService(_mockPersistence);
+        var request = new SpecialityModel.Request("Cardiología", "Especialidad del corazón");
+
+        var result = await speciality.Add(request);
+
+        Assert.NotNull(result);
+        Assert.Equal(request.Name, result.Name);
+        Assert.Equal(request.Description, result.Description);
+
+        await _mockPersistence.Received(1).Add(Arg.Is<Speciality>(s =>
+            s.Name == request.Name &&
+            s.Description == request.Description));
+    }
+
+    [Fact]
     public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadSinDescripcion_EntoncesSeLanzaUnaValidationExcepcion()
     {
         var speciality = new SpecialityService(_mockPersistence);
