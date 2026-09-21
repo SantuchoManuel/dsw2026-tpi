@@ -20,7 +20,7 @@ namespace Dsw2026Tpi.Data.Configurations
             builder.Property(t => t.EstadoTurno).IsRequired();
 
             builder.HasOne(t => t.Disponibilidad)
-                   .WithMany()
+                   .WithMany(d => d.Turnos)
                    .HasForeignKey(t => t.DisponibilidadId)
                    .OnDelete(DeleteBehavior.Restrict);
             builder.HasQueryFilter(t => !t.Deleted);

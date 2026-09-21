@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -111,27 +111,27 @@ namespace Dsw2026Tpi.Application.Services
                 for (int j = i + 1; j < diasPedidos.Count; j++)
                 {
                     var dia2 = diasPedidos[j];
-
                     if (dia1.Day.Trim().Equals(dia2.Day.Trim(), StringComparison.OrdinalIgnoreCase))
                     {
                         var inicio2 = TimeOnly.Parse(dia2.StartTime);
                         var fin2 = TimeOnly.Parse(dia2.EndTime);
-
                         if (inicio1 < fin2 && fin1 > inicio2)
                         {
                             throw new ValidationException(
                                 string.Format(ErrorCodes.FILTER_INVALID, "Dias"),
-                                nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Dia", "Los Horarios No son Validos, debido a su solapamiento");
-
+                                nameof(ErrorCodes.FILTER_INVALID))
+                                .WithDetail("Dia", "Los Horarios No son Validos, debido a su solapamiento");
                         }
                     }
                 }
             }
-            //var hoy = DateTime.Now.Date; este teniamos antes
+
             var hoy = _timeProvider.GetLocalNow().Date;
             var anioActual = hoy.Year;
             var mesActual = hoy.Month;
             var cantidadDiasDelMes = DateTime.DaysInMonth(anioActual, mesActual);
+
+            var nuevasDisponibilidades = new List<Disponibilidad>();
 
             foreach (var diaRequerido in diasPedidos)
             {
@@ -142,35 +142,29 @@ namespace Dsw2026Tpi.Application.Services
                 if (horaDeInicio >= horaDeFin)
                 {
                     throw new ValidationException(
-                    string.Format(ErrorCodes.FILTER_INVALID, "EndTime"),
-                    nameof(ErrorCodes.FILTER_INVALID)).WithDetail("EndTime", "La StartTime debe ser menor que EndTime");
+                        string.Format(ErrorCodes.FILTER_INVALID, "EndTime"),
+                        nameof(ErrorCodes.FILTER_INVALID))
+                        .WithDetail("EndTime", "La StartTime debe ser menor que EndTime");
                 }
 
+                // Traer todas las disponibilidades del mismo doctor/mes/año/día
+                // y verificar solapamiento de intervalos (no solo coincidencia exacta)
                 var disponibilidadesExistentes = await _persistence.GetFiltered<Disponibilidad>(d =>
                     d.DoctorId == doctorId &&
                     d.Mes == mesActual &&
                     d.Año == anioActual &&
-                    d.DiaDeLaSemana == diaDeLaSemana &&
-                    d.HoraDeEntrada == horaDeInicio &&
-                    d.HoraDeSalida == horaDeFin);
+                    d.DiaDeLaSemana == diaDeLaSemana);
 
-                if (disponibilidadesExistentes.Any(d => d.DoctorId == doctorId && d.Mes == mesActual && d.Año == anioActual && d.DiaDeLaSemana == diaDeLaSemana && d.HoraDeEntrada == horaDeInicio && d.HoraDeSalida == horaDeFin))
+                if (disponibilidadesExistentes.Any(d =>
+                    d.HoraDeEntrada < horaDeFin && d.HoraDeSalida > horaDeInicio))
                 {
                     throw new ValidationException(
-                    string.Format(ErrorCodes.FILTER_INVALID, "Solapámiento"),
-                    nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Horario", "horarios con problema ");
+                    string.Format(ErrorCodes.FILTER_INVALID, "Solapamiento"),
+                    nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Horario", "El horario se solapa con una disponibilidad ya existente para ese día");
                 }
 
                 var nuevaDisponibilidad = new Disponibilidad(
-                    mesActual,
-                    anioActual,
-                    diaDeLaSemana,
-                    horaDeInicio,
-                    horaDeFin,
-                    doctorId
-                );
-
-                await _persistence.Add(nuevaDisponibilidad);
+                    mesActual, anioActual, diaDeLaSemana, horaDeInicio, horaDeFin, doctorId);
 
                 for (int numeroDia = hoy.Day; numeroDia <= cantidadDiasDelMes; numeroDia++)
                 {
@@ -180,27 +174,34 @@ namespace Dsw2026Tpi.Application.Services
                     {
                         if (_feriadoService.EsFeriado(fechaActual))
                         {
-                            _logger.LogInformation("Día omitido: No se generaron turnos para el {Fecha} por ser feriado nacional.", fechaActual.ToString("dd/MM/yyyy"));
-                            continue; 
+                            _logger.LogInformation(
+                                "Día omitido: No se generaron turnos para el {Fecha} por ser feriado nacional.",
+                                fechaActual.ToString("dd/MM/yyyy"));
+                            continue;
                         }
-                        var relojInterno = horaDeInicio;
 
+                        var relojInterno = horaDeInicio;
                         while (relojInterno < horaDeFin)
                         {
                             var nuevoTurno = new Turno(
                                 DateOnly.FromDateTime(fechaActual),
                                 relojInterno,
                                 relojInterno.AddMinutes(30),
-                                nuevaDisponibilidad.Id
+                                null 
                             );
 
-                            await _persistence.Add(nuevoTurno);
+                            nuevaDisponibilidad.Turnos.Add(nuevoTurno);
                             relojInterno = relojInterno.AddMinutes(30);
                         }
                     }
                 }
+
+                nuevasDisponibilidades.Add(nuevaDisponibilidad);
             }
+
+            await _persistence.AddRange(nuevasDisponibilidades);
         }
+
 
         private DayOfWeek MapearDiaSemana(string dia)
         {

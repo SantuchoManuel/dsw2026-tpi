@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dsw2026Tpi.Data.Migrations
 {
     [DbContext(typeof(Dsw2026TpiDbContext))]
-    [Migration("20260803174834_InitialModel")]
+    [Migration("20260921193031_InitialModel")]
     partial class InitialModel
     {
         /// <inheritdoc />
@@ -292,11 +292,16 @@ namespace Dsw2026Tpi.Data.Migrations
             modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Turno", b =>
                 {
                     b.HasOne("Dsw2026Tpi.Domain.Entities.Disponibilidad", "Disponibilidad")
-                        .WithMany()
+                        .WithMany("Turnos")
                         .HasForeignKey("DisponibilidadId")
                         .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("Disponibilidad");
+                });
+
+            modelBuilder.Entity("Dsw2026Tpi.Domain.Entities.Disponibilidad", b =>
+                {
+                    b.Navigation("Turnos");
                 });
 #pragma warning restore 612, 618
         }

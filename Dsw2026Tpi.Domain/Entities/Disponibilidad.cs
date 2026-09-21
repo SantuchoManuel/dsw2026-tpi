@@ -13,6 +13,7 @@ namespace Dsw2026Tpi.Domain.Entities
         public TimeOnly HoraDeSalida { get; set; }
         public Guid? DoctorId { get; set; }
         public Doctor Doctor { get; set; }
+        public List<Turno> Turnos { get; set; } = new();
 
         private Disponibilidad() 
         {

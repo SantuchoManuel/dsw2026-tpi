@@ -20,6 +20,12 @@ public class PersistenceEf: IPersistence
         await _context.SaveChangesAsync();
         return entity;
     }
+    
+    public async Task AddRange<T>(IEnumerable<T> entities) where T : EntityBase
+    {
+        await _context.AddRangeAsync(entities);
+        await _context.SaveChangesAsync();
+    }
 
     public async Task<T> Delete<T>(T entity) where T : EntityBase
     {
