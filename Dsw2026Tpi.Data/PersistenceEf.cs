@@ -51,6 +51,7 @@ public class PersistenceEf: IPersistence
 
     public async Task<T> Update<T>(T entity) where T : EntityBase
     {
+        entity.UpdateTimes();
         _context.Update(entity);
         await _context.SaveChangesAsync();
         return entity;
