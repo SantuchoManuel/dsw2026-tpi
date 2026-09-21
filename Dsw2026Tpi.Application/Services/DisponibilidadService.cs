@@ -154,9 +154,11 @@ namespace Dsw2026Tpi.Application.Services
                     d.HoraDeEntrada == horaDeInicio &&
                     d.HoraDeSalida == horaDeFin);
 
-                if (disponibilidadesExistentes.Any())
+                if (disponibilidadesExistentes.Any(d => d.DoctorId == doctorId && d.Mes == mesActual && d.Año == anioActual && d.DiaDeLaSemana == diaDeLaSemana && d.HoraDeEntrada == horaDeInicio && d.HoraDeSalida == horaDeFin))
                 {
-                    continue;
+                    throw new ValidationException(
+                    string.Format(ErrorCodes.FILTER_INVALID, "Solapámiento"),
+                    nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Horario", "horarios con problema ");
                 }
 
                 var nuevaDisponibilidad = new Disponibilidad(
