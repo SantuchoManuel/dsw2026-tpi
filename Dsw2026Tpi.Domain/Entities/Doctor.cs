@@ -1,4 +1,7 @@
-﻿namespace Dsw2026Tpi.Domain.Entities;
+﻿using Dsw2026Tpi.Domain.Interfaces;
+using System.ComponentModel.DataAnnotations;
+
+namespace Dsw2026Tpi.Domain.Entities;
 
 public class Doctor: DeleteEntityBase
 {
@@ -7,6 +10,8 @@ public class Doctor: DeleteEntityBase
     public bool IsActive { get; private set; }
     public Guid? SpecialityId { get; set; }
     public Speciality? Speciality { get; private set; }
+
+    public List<Disponibilidad> Disponibilidades { get; private set; } = new();
 
     #region Constructor for EF
 #pragma warning disable CS8618
@@ -27,5 +32,27 @@ public class Doctor: DeleteEntityBase
     public void Deactivate()
     {
         IsActive = false;
+    }
+
+    public Disponibilidad CreteAvalibities(int month,int year,DayOfWeek dayOfWeek,TimeOnly startTime,TimeOnly endTime,DateTime fromDate)
+    {
+
+        var nuevaDisponibilidad = new Disponibilidad(
+            month, year, dayOfWeek, startTime, endTime, null);
+
+
+        Disponibilidades.Add(nuevaDisponibilidad);
+
+        return nuevaDisponibilidad;
+    }
+
+    public bool CheckAvailable(int month, int year, DayOfWeek dayOfWeek, TimeOnly startTime, TimeOnly endTime)
+    {
+        return Disponibilidades.Any(d =>
+            d.Mes == month &&
+            d.Año == year &&
+            d.DiaDeLaSemana == dayOfWeek &&
+            d.HoraDeEntrada < endTime &&
+            d.HoraDeSalida > startTime);
     }
 }

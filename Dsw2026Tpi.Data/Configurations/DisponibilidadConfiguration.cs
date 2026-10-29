@@ -1,9 +1,6 @@
 ﻿using Dsw2026Tpi.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Dsw2026Tpi.Data.Configurations
 {
@@ -21,9 +18,9 @@ namespace Dsw2026Tpi.Data.Configurations
             builder.Property(d => d.HoraDeSalida).IsRequired();
 
             builder.HasOne(d => d.Doctor)
-                   .WithMany()
-                   .HasForeignKey(d => d.DoctorId)
-                   .OnDelete(DeleteBehavior.Restrict);
+            .WithMany(doc => doc.Disponibilidades) 
+            .HasForeignKey(d => d.DoctorId)
+            .OnDelete(DeleteBehavior.Restrict);
             builder.HasQueryFilter(d => !d.Deleted);
         }
     }

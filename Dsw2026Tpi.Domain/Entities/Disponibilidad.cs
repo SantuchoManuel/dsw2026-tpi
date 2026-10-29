@@ -29,5 +29,23 @@ namespace Dsw2026Tpi.Domain.Entities
             HoraDeSalida = horaDeSalida;
             DoctorId = doctorId;
         }
+
+        public void GenerarTurnosDelDia(DateOnly fecha)
+        {
+            int duracionMinutos = 30;
+            var relojInterno = HoraDeEntrada;
+            while (relojInterno < HoraDeSalida)
+            {
+                var nuevoTurno = new Turno(
+                    fecha,
+                    relojInterno,
+                    relojInterno.AddMinutes(duracionMinutos),
+                    null
+                );
+
+                Turnos.Add(nuevoTurno);
+                relojInterno = relojInterno.AddMinutes(duracionMinutos);
+            }
+        }
     }
 }

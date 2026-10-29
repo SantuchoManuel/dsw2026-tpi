@@ -40,10 +40,10 @@ namespace Dsw2026Tpi.Application.Services
         {
             ValidarPeticion(peticion);
 
-            var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId);
+            var doctor = await _persistence.GetById<Doctor>(peticion.DoctorId, nameof(Doctor.Disponibilidades));
             if (doctor == null) { throw new EntityNotFoundException("Médico").WithDetail("Medico", "No encontrado"); }
 
-            await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
+            await GenerarDisponibilidades(doctor, peticion.Days);
 
             _logger.LogInformation("Se generaron nuevas disponibilidades para el doctor con ID {DoctorId}.", peticion.DoctorId);
 
@@ -76,7 +76,7 @@ namespace Dsw2026Tpi.Application.Services
                 await _persistence.Delete(disponibilidad);
             }
 
-            await GenerarDisponibilidades(peticion.DoctorId, peticion.Days);
+            await GenerarDisponibilidades(doctor, peticion.Days);
 
             _logger.LogInformation("Se eliminaron y regeneraron las disponibilidades para el doctor con ID {DoctorId}.", peticion.DoctorId);
 
@@ -100,7 +100,7 @@ namespace Dsw2026Tpi.Application.Services
             }
         }
 
-        private async Task GenerarDisponibilidades(Guid doctorId, List<DisponibilidadModel.EsquemaDia> diasPedidos)
+        private async Task GenerarDisponibilidades(Doctor doctor, List<DisponibilidadModel.EsquemaDia> diasPedidos)
         {
             for (int i = 0; i < diasPedidos.Count; i++)
             {
@@ -147,24 +147,14 @@ namespace Dsw2026Tpi.Application.Services
                         .WithDetail("EndTime", "La StartTime debe ser menor que EndTime");
                 }
 
-                // Traer todas las disponibilidades del mismo doctor/mes/año/día
-                // y verificar solapamiento de intervalos (no solo coincidencia exacta)
-                var disponibilidadesExistentes = await _persistence.GetFiltered<Disponibilidad>(d =>
-                    d.DoctorId == doctorId &&
-                    d.Mes == mesActual &&
-                    d.Año == anioActual &&
-                    d.DiaDeLaSemana == diaDeLaSemana);
-
-                if (disponibilidadesExistentes.Any(d =>
-                    d.HoraDeEntrada < horaDeFin && d.HoraDeSalida > horaDeInicio))
+                if (!doctor.CheckAvailable(mesActual, anioActual, diaDeLaSemana, horaDeInicio, horaDeFin))
                 {
                     throw new ValidationException(
                     string.Format(ErrorCodes.FILTER_INVALID, "Solapamiento"),
                     nameof(ErrorCodes.FILTER_INVALID)).WithDetail("Horario", "El horario se solapa con una disponibilidad ya existente para ese día");
                 }
 
-                var nuevaDisponibilidad = new Disponibilidad(
-                    mesActual, anioActual, diaDeLaSemana, horaDeInicio, horaDeFin, doctorId);
+                var nuevaDisponibilidad = doctor.CreteAvalibities(mesActual, anioActual, diaDeLaSemana, horaDeInicio, horaDeFin, hoy);
 
                 for (int numeroDia = hoy.Day; numeroDia <= cantidadDiasDelMes; numeroDia++)
                 {
@@ -180,19 +170,8 @@ namespace Dsw2026Tpi.Application.Services
                             continue;
                         }
 
-                        var relojInterno = horaDeInicio;
-                        while (relojInterno < horaDeFin)
-                        {
-                            var nuevoTurno = new Turno(
-                                DateOnly.FromDateTime(fechaActual),
-                                relojInterno,
-                                relojInterno.AddMinutes(30),
-                                null 
-                            );
+                        nuevaDisponibilidad.GenerarTurnosDelDia(DateOnly.FromDateTime(fechaActual));
 
-                            nuevaDisponibilidad.Turnos.Add(nuevoTurno);
-                            relojInterno = relojInterno.AddMinutes(30);
-                        }
                     }
                 }
 
