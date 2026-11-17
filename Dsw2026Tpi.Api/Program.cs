@@ -56,11 +56,13 @@ public class Program
                 app.UseSwaggerUI();
             }
 
+            app.UseCors();
+            
             app.UseRateLimiter();
 
             app.UseAuthentication();
             app.UseAuthorization();
-            app.UseCors();
+            
             app.UseMiddleware<SecurityHeadersMiddleware>();
             app.UseMiddleware<ExceptionHandlingMiddleware>();
 
