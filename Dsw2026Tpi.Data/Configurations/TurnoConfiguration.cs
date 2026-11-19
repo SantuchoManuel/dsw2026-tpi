@@ -17,7 +17,9 @@ namespace Dsw2026Tpi.Data.Configurations
             builder.Property(t => t.Fecha).IsRequired();
             builder.Property(t => t.HoraDeInicio).IsRequired();
             builder.Property(t => t.HoraDeFin).IsRequired();
-            builder.Property(t => t.EstadoTurno).IsRequired();
+            builder.Property(t => t.EstadoTurno).IsRequired()
+                   .HasConversion<string>()
+                   .IsRequired();
 
             builder.HasOne(t => t.Disponibilidad)
                    .WithMany(d => d.Turnos)

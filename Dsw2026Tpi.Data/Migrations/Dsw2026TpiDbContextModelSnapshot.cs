@@ -50,7 +50,7 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<Guid?>("TurnoId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -94,7 +94,7 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<int>("Mes")
                         .HasColumnType("int");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -132,7 +132,7 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<Guid?>("SpecialityId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -172,7 +172,7 @@ namespace Dsw2026Tpi.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -202,7 +202,7 @@ namespace Dsw2026Tpi.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
@@ -228,8 +228,9 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<Guid?>("DisponibilidadId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<int>("EstadoTurno")
-                        .HasColumnType("int");
+                    b.Property<string>("EstadoTurno")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateOnly>("Fecha")
                         .HasColumnType("date");
@@ -240,7 +241,7 @@ namespace Dsw2026Tpi.Data.Migrations
                     b.Property<TimeOnly>("HoraDeInicio")
                         .HasColumnType("time");
 
-                    b.Property<DateTime>("UpdatedAt")
+                    b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.HasKey("Id");
