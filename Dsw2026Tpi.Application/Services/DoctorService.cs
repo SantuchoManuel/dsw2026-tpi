@@ -1,4 +1,4 @@
-﻿using Dsw2026Tpi.Application.Dtos;
+using Dsw2026Tpi.Application.Dtos;
 using Dsw2026Tpi.Application.Interfaces;
 using Dsw2026Tpi.CrossCutting.Exceptions;
 using Dsw2026Tpi.CrossCutting.Resources;
@@ -108,20 +108,20 @@ public class DoctorService : IDoctorService
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
         if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail("DoctorId", "No Encontrado");
         // Obtenemos todos los turnos del doctor a través de su disponibilidad
-        var turnos = await _persistence.GetFiltered<Turno>(
-            t => t.Disponibilidad.DoctorId == id
-                 && (!date.HasValue || t.Fecha == date.Value),
-            "Disponibilidad"
+        var turnos = await _persistence.GetFiltered<AvailabilitySlot>(
+            t => t.Availability.DoctorId == id
+                 && (!date.HasValue || t.Date == date.Value),
+            nameof(AvailabilitySlot.Availability)
         );
         return turnos?
-            .OrderBy(t => t.Fecha)
-            .ThenBy(t => t.HoraDeInicio)
+            .OrderBy(t => t.Date)
+            .ThenBy(t => t.StartTime)
             .Select(t => new DoctorModel.SlotResponse(
                 t.Id,
-                t.Fecha,
-                t.HoraDeInicio.ToString("HH:mm"),
-                t.HoraDeFin.ToString("HH:mm"),
-                t.EstadoTurno.ToString()
+                t.Date,
+                t.StartTime.ToString("HH:mm"),
+                t.EndTime.ToString("HH:mm"),
+                t.Status.ToString()
             ))
             .ToList() ?? new List<DoctorModel.SlotResponse>();
     }

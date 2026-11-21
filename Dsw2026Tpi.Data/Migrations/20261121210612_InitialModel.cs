@@ -137,23 +137,18 @@ namespace Dsw2026Tpi.Data.Migrations
                 {
                     table.PrimaryKey("PK_Appointments", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Appointments_Patients_PatientId",
-                        column: x => x.PatientId,
-                        principalTable: "Patients",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Appointments_AvailabilitySlots_AvailabilitySlotId",
                         column: x => x.AvailabilitySlotId,
                         principalTable: "AvailabilitySlots",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Appointments_Patients_PatientId",
+                        column: x => x.PatientId,
+                        principalTable: "Patients",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Appointments_PatientId",
-                table: "Appointments",
-                column: "PatientId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Appointments_AvailabilitySlotId",
@@ -163,9 +158,19 @@ namespace Dsw2026Tpi.Data.Migrations
                 filter: "[AvailabilitySlotId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Appointments_PatientId",
+                table: "Appointments",
+                column: "PatientId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Availabilities_DoctorId",
                 table: "Availabilities",
                 column: "DoctorId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AvailabilitySlots_AvailabilityId",
+                table: "AvailabilitySlots",
+                column: "AvailabilityId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Doctors_SpecialityId",
@@ -177,11 +182,6 @@ namespace Dsw2026Tpi.Data.Migrations
                 table: "Specialities",
                 column: "Name",
                 unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AvailabilitySlots_AvailabilityId",
-                table: "AvailabilitySlots",
-                column: "AvailabilityId");
         }
 
         /// <inheritdoc />
@@ -191,10 +191,10 @@ namespace Dsw2026Tpi.Data.Migrations
                 name: "Appointments");
 
             migrationBuilder.DropTable(
-                name: "Patients");
+                name: "AvailabilitySlots");
 
             migrationBuilder.DropTable(
-                name: "AvailabilitySlots");
+                name: "Patients");
 
             migrationBuilder.DropTable(
                 name: "Availabilities");
