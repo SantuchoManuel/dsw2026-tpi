@@ -103,6 +103,33 @@ public class DoctorService : IDoctorService
         )).ToList() ?? new List<DoctorModel.AvailabilityResponse>();
     }
 
+    public async Task<List<DoctorModel.SlotResponse>> GetSlots(Guid id, DateOnly? date = null)
+    {
+        var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
+        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail("DoctorId", "No Encontrado");
+        // Obtenemos todos los turnos del doctor a través de su disponibilidad
+        var turnos = await _persistence.GetFiltered<Turno>(
+            t => t.Disponibilidad.DoctorId == id
+                 && (!date.HasValue || t.Fecha == date.Value),
+            "Disponibilidad"
+        );
+        return turnos?
+            .OrderBy(t => t.Fecha)
+            .ThenBy(t => t.HoraDeInicio)
+            .Select(t => new DoctorModel.SlotResponse(
+                t.Id,
+                t.Fecha,
+                t.HoraDeInicio.ToString("HH:mm"),
+                t.HoraDeFin.ToString("HH:mm"),
+                t.EstadoTurno.ToString()
+            ))
+            .ToList() ?? new List<DoctorModel.SlotResponse>();
+    }
+
+
+
+
+
     private async Task<DoctorModel.Response> GetByIdInternal(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(

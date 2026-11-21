@@ -31,8 +31,22 @@ public class DoctorController : AppController
     {
         var result = await _doctorService.GetAvailabilities(id);
         return Ok(result);
-
     }
+
+
+
+    [HttpGet("{id:guid}/slots")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetSlots(Guid id, [FromQuery] DateOnly? date = null)
+    {
+        var result = await _doctorService.GetSlots(id, date);
+        return Ok(result);
+    }
+
+
+
 
     [HttpPost]
     [Authorize(Policy = Policies.AdminPolicy)]
