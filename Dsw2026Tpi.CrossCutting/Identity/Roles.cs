@@ -2,6 +2,6 @@
 
 public class Roles
 {
-    public const string Administrator = "Administrador";
-    public const string Patient = "Paciente";
+    public const string Administrator = "Administrator";
+    public const string Patient = "Patient";
 }

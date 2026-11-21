@@ -74,7 +74,7 @@ public class SpecialityService : ISpecialityService
         var speciality = await _persistence.First<Speciality>(s => s.Id == id && !s.Deleted);
         if (speciality == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "No encontrada");
 
-        speciality.MarcarComoEliminado();
+        speciality.MarkAsDeleted();
         await _persistence.Update(speciality);
     }
 

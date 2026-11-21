@@ -7,23 +7,23 @@ using System.Text;
 
 namespace Dsw2026Tpi.Data.Configurations
 {
-    public class CitaConfiguration : IEntityTypeConfiguration<Cita>
+    public class AppointmentConfiguration : IEntityTypeConfiguration<Appointment>
     {
-        public void Configure(EntityTypeBuilder<Cita> builder)
+        public void Configure(EntityTypeBuilder<Appointment> builder)
         {
-            builder.ToTable("Citas");
+            builder.ToTable("Appointments");
             builder.HasKey(c => c.Id);
 
-            builder.Property(c => c.CitaEstado).IsRequired();
+            builder.Property(c => c.Status).IsRequired();
 
-            builder.HasOne(c => c.Paciente)
+            builder.HasOne(c => c.Patient)
                    .WithMany()
-                   .HasForeignKey(c => c.PacienteId)
+                   .HasForeignKey(c => c.PatientId)
                    .OnDelete(DeleteBehavior.Restrict);
 
-            builder.HasOne(c => c.Turno)
+            builder.HasOne(c => c.AvailabilitySlot)
                    .WithOne()
-                   .HasForeignKey<Cita>(c => c.TurnoId)
+                   .HasForeignKey<Appointment>(c => c.AvailabilitySlotId)
                    .OnDelete(DeleteBehavior.Restrict);
         }
     }

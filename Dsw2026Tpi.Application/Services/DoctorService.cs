@@ -45,7 +45,7 @@ public class DoctorService : IDoctorService
     {
         ValidateRequest(request);
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);//
-        if (specialty == null) throw new EntityNotFoundException("Especialidad").WithDetail("Speciality", "No Encontrado");
+        if (specialty == null) throw new EntityNotFoundException("Speciality").WithDetail("Speciality", "No Encontrado");
 
 
         var doctor = new Doctor(request.Name, request.LicenseNumber, specialty);
@@ -59,10 +59,10 @@ public class DoctorService : IDoctorService
     {
         ValidateRequest(request);
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
-        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
+        if (doctor == null) throw new EntityNotFoundException("Doctor").WithDetail(" Doctor", "No Encontrado");
 
         var specialty = await _persistence.First<Speciality>(s => s.Id == request.SpecialityId);
-        if (specialty == null) throw new EntityNotFoundException("Especialidad").WithDetail("speciality", "No Encontrado");
+        if (specialty == null) throw new EntityNotFoundException("Speciality").WithDetail("speciality", "No Encontrado");
 
 
         doctor.Name = request.Name;
@@ -77,29 +77,29 @@ public class DoctorService : IDoctorService
     public async Task Delete(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && !d.Deleted);
-        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
+        if (doctor == null) throw new EntityNotFoundException("Doctor").WithDetail(" Doctor", "No Encontrado");
 
-        doctor.MarcarComoEliminado();
+        doctor.MarkAsDeleted();
         await _persistence.Update(doctor);
     }
 
     public async Task<List<DoctorModel.AvailabilityResponse>> GetAvailabilities(Guid id)
     {
         var doctor = await _persistence.First<Doctor>(d => d.Id == id && d.IsActive && !d.Deleted);
-        if (doctor == null) throw new EntityNotFoundException("Médico").WithDetail(" Medico", "No Encontrado");
+        if (doctor == null) throw new EntityNotFoundException("Doctor").WithDetail(" Doctor", "No Encontrado");
 
-        var mesActual = DateTime.Now.Month;
-        var anioActual = DateTime.Now.Year;
+        var currentMonth = DateTime.Now.Month;
+        var currentYear = DateTime.Now.Year;
 
-        var disponibilidades = await _persistence.GetFiltered<Disponibilidad>(
-            a => a.DoctorId == id && a.Mes == mesActual && a.Año == anioActual
+        var availabilities = await _persistence.GetFiltered<Availability>(
+            a => a.DoctorId == id && a.Month == currentMonth && a.Year == currentYear
         );
 
-        return disponibilidades?.Select(a => new DoctorModel.AvailabilityResponse(
+        return availabilities?.Select(a => new DoctorModel.AvailabilityResponse(
             a.Id,
-            a.DiaDeLaSemana.ToString(),
-            a.HoraDeEntrada.ToString("HH:mm"),
-            a.HoraDeSalida.ToString("HH:mm")
+            a.DayOfWeek.ToString(),
+            a.StartTime.ToString("HH:mm"),
+            a.EndTime.ToString("HH:mm")
         )).ToList() ?? new List<DoctorModel.AvailabilityResponse>();
     }
 

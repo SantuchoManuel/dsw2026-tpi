@@ -11,27 +11,27 @@ public class Dsw2026TpiDbContext: DbContext
         base(options)
     {
     }
-    public DbSet<Cita> Citas { get; set; }
-    public DbSet<Disponibilidad> Disponibilidades { get; set; }
-    public DbSet<Turno> Turnos { get; set; }
-    public DbSet<Doctor> Doctores { get; set; }
-    public DbSet<Paciente> Pacientes { get; set; }
-    public DbSet<Speciality> Especialidades { get; set; }
+    public DbSet<Appointment> Appointments { get; set; }
+    public DbSet<Availability> Availabilities { get; set; }
+    public DbSet<AvailabilitySlot> AvailabilitySlots { get; set; }
+    public DbSet<Doctor> Doctors { get; set; }
+    public DbSet<Patient> Patients { get; set; }
+    public DbSet<Speciality> Specialities { get; set; }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
-        var ahora = DateTime.Now;
+        var now = DateTime.Now;
 
         foreach (var entry in ChangeTracker.Entries<EntityBase>())
         {
             if (entry.State == EntityState.Added)
             {
-                entry.Entity.CreatedAt = ahora;
-                entry.Entity.UpdatedAt = ahora;
+                entry.Entity.CreatedAt = now;
+                entry.Entity.UpdatedAt = now;
             }
             else if (entry.State == EntityState.Modified)
             {
-                entry.Entity.UpdatedAt = ahora;
+                entry.Entity.UpdatedAt = now;
             }
         }
 

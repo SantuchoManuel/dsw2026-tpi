@@ -153,13 +153,13 @@
   <data name="APPOINTMENT_CONFLICT" xml:space="preserve">
     <value>Slot already booked</value>
   </data>
-  <data name="TURNO_PASADO" xml:space="preserve">
+  <data name="SLOT_IN_PAST" xml:space="preserve">
     <value>No se permiten reservar turnos en fechas u horarios pasados</value>
   </data>
-  <data name="TURNO_OCUPADO" xml:space="preserve">
+  <data name="SLOT_ALREADY_TAKEN" xml:space="preserve">
     <value>El turno ya no está disponible. Fue confirmado por otro paciente</value>
   </data>
-  <data name="ESTADO_INVALIDO" xml:space="preserve">
+  <data name="INVALID_STATUS" xml:space="preserve">
     <value>El estado actual del turno no permite realizar esta operación</value>
   </data>
   <data name="TOO_MANY_REQUESTS" xml:space="preserve">

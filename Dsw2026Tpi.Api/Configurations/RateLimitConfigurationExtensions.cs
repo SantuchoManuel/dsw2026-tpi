@@ -66,7 +66,7 @@ namespace Dsw2026Tpi.Api.Configurations
                             Window = TimeSpan.FromMinutes(1)
                         }));
 
-                options.AddPolicy("TurnosPolicy", httpContext =>
+                options.AddPolicy("AppointmentsPolicy", httpContext =>
                 {
 
                     var userId = httpContext.User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "unknown_user";

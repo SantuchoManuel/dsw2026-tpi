@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Dsw2026Tpi.Data.Migrations.Identity
 {
     [DbContext(typeof(AuthenticationDbContext))]
-    [Migration("20260723003252_ArregloTablasIdentity")]
-    partial class ArregloTablasIdentity
+    [Migration("20260723003252_FixIdentityTables")]
+    partial class FixIdentityTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

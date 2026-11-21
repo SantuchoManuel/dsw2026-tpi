@@ -5,10 +5,10 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Dsw2026Tpi.Application.Dtos
 {
-    public record DisponibilidadModel
+    public record AvailabilityModel
     {
-        public record Request(Guid DoctorId, List<EsquemaDia> Days);
-        public record EsquemaDia( string Day,string StartTime, string EndTime);
+        public record Request(Guid DoctorId, List<DaySchedule> Days);
+        public record DaySchedule( string Day,string StartTime, string EndTime);
     }
 
     /*

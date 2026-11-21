@@ -10,11 +10,11 @@ namespace Dsw2026Tpi.Api.Controllers
 {
     [Authorize(Policy = Policies.AdminPolicy)]
     [Route("api/availabilities")]
-    public class DisponibilidadController : AppController
+    public class AvailabilityController : AppController
     {
-        private readonly IDisponibilidadService _service;
+        private readonly IAvailabilityService _service;
 
-        public DisponibilidadController(IDisponibilidadService service)
+        public AvailabilityController(IAvailabilityService service)
         {
             _service = service;
         }
@@ -22,18 +22,18 @@ namespace Dsw2026Tpi.Api.Controllers
         [HttpPost]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Create([FromBody] DisponibilidadModel.Request request)
+        public async Task<IActionResult> Create([FromBody] AvailabilityModel.Request request)
         {
-            var result = await _service.CrearDisponibilidadAsync(request);
+            var result = await _service.CreateAvailabilityAsync(request);
             return Ok(result);
         }
 
         [HttpPut]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> Update([FromBody] DisponibilidadModel.Request request)
+        public async Task<IActionResult> Update([FromBody] AvailabilityModel.Request request)
         {
-            var result = await _service.ActualizarDisponibilidadAsync(request);
+            var result = await _service.UpdateAvailabilityAsync(request);
             return Ok(result);
         }
     }

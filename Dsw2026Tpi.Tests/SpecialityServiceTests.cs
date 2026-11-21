@@ -19,7 +19,7 @@ public class SpecialityServiceTests
     private readonly IPersistence _mockPersistence = Substitute.For<IPersistence>();
 
     [Fact]
-    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadConNombreYDescripcion_EntoncesSeGuardaEnLaBaseDeDatos()
+    public async Task AddSpeciality_WhenCreatedWithNameAndDescription_ThenItIsSavedToDatabase()
     {
         var speciality = new SpecialityService(_mockPersistence);
         var request = new SpecialityModel.Request("Cardiología", "Especialidad del corazón");
@@ -36,7 +36,7 @@ public class SpecialityServiceTests
     }
 
     [Fact]
-    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadSinDescripcion_EntoncesSeLanzaUnaValidationExcepcion()
+    public async Task AddSpeciality_WhenCreatedWithoutDescription_ThenThrowsValidationException()
     {
         var speciality = new SpecialityService(_mockPersistence);
         var request = new SpecialityModel.Request("Especialidad sin Descripción", "");
@@ -55,7 +55,7 @@ public class SpecialityServiceTests
     [InlineData("Ca", "Especialidad con nombre demasiado corto")]
     [InlineData("C", "Especialidad con nombre demasiado corto")]
     [InlineData("NombreDemasiadoLargoQueSuperaLosCienCaracteresPermitidosParaElCampoNombreDeLaEspecialidadXXXXXXXXXXXX", "Especialidad con nombre demasiado largo")]
-    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadConNombreDemasiadoCortoOLargo_EntoncesSeLanzaUnaValidationExcepcion(string name, string description)
+    public async Task AddSpeciality_WhenNameIsTooShortOrTooLong_ThenThrowsValidationException(string name, string description)
     {
         var speciality = new SpecialityService(_mockPersistence);
         var request = new SpecialityModel.Request(name, description);
@@ -70,7 +70,7 @@ public class SpecialityServiceTests
         await _mockPersistence.DidNotReceive().Add(Arg.Any<Speciality>());
     }
     [Fact]
-    public async Task AddSpeciality_CuandoSeCreaUnaEspecialidadSinNombre_EntoncesSeLanzaUnaValidationExcepcion()
+    public async Task AddSpeciality_WhenCreatedWithoutName_ThenThrowsValidationException()
     {
         var speciality = new SpecialityService(_mockPersistence);
         var request = new SpecialityModel.Request("", "Especialidad sin nombre");

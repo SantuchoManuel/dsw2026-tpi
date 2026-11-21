@@ -1,12 +1,12 @@
 ﻿[
   {
     "id": "2E0D9BDF-0041-4589-B721-C495FA7C39D8",
-    "name": "Administrador",
-    "normalizedName": "ADMINISTRADOR"
+    "name": "Administrator",
+    "normalizedName": "ADMINISTRATOR"
   },
   {
     "id": "44788885-062B-4F29-9471-BFEA3E2E1984",
-    "name": "Paciente",
-    "normalizedName": "PACIENTE"
+    "name": "Patient",
+    "normalizedName": "PATIENT"
   }
 ]

@@ -4,11 +4,11 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    public enum CitaEstado
+    public enum AppointmentStatus
     {
-        Confirmada = 0, 
-        Cancelada = 1, 
-        Completada = 2,
+        Confirmed = 0, 
+        Cancelled = 1, 
+        Completed = 2,
         
     }
 }

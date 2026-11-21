@@ -7,18 +7,18 @@ using System.Text;
 
 namespace Dsw2026Tpi.Data.Configurations
 {
-    public class DisponibilidadConfiguration : IEntityTypeConfiguration<Disponibilidad>
+    public class AvailabilityConfiguration : IEntityTypeConfiguration<Availability>
     {
-        public void Configure(EntityTypeBuilder<Disponibilidad> builder)
+        public void Configure(EntityTypeBuilder<Availability> builder)
         {
-            builder.ToTable("Disponibilidades");
+            builder.ToTable("Availabilities");
             builder.HasKey(d => d.Id);
 
-            builder.Property(d => d.Mes).IsRequired();
-            builder.Property(d => d.Año).IsRequired();
-            builder.Property(d => d.DiaDeLaSemana).IsRequired();
-            builder.Property(d => d.HoraDeEntrada).IsRequired();
-            builder.Property(d => d.HoraDeSalida).IsRequired();
+            builder.Property(d => d.Month).IsRequired();
+            builder.Property(d => d.Year).IsRequired();
+            builder.Property(d => d.DayOfWeek).IsRequired();
+            builder.Property(d => d.StartTime).IsRequired();
+            builder.Property(d => d.EndTime).IsRequired();
 
             builder.HasOne(d => d.Doctor)
                    .WithMany()

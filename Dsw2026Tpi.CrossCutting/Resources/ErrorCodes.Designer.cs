@@ -99,9 +99,9 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         /// <summary>
         ///   Busca una cadena traducida similar a El estado actual del turno no permite realizar esta operación.
         /// </summary>
-        public static string ESTADO_INVALIDO {
+        public static string INVALID_STATUS {
             get {
-                return ResourceManager.GetString("ESTADO_INVALIDO", resourceCulture);
+                return ResourceManager.GetString("INVALID_STATUS", resourceCulture);
             }
         }
         
@@ -171,18 +171,18 @@ namespace Dsw2026Tpi.CrossCutting.Resources {
         /// <summary>
         ///   Busca una cadena traducida similar a El turno ya no está disponible. Fue confirmado por otro paciente.
         /// </summary>
-        public static string TURNO_OCUPADO {
+        public static string SLOT_ALREADY_TAKEN {
             get {
-                return ResourceManager.GetString("TURNO_OCUPADO", resourceCulture);
+                return ResourceManager.GetString("SLOT_ALREADY_TAKEN", resourceCulture);
             }
         }
         
         /// <summary>
         ///   Busca una cadena traducida similar a No se permiten reservar turnos en fechas u horarios pasados.
         /// </summary>
-        public static string TURNO_PASADO {
+        public static string SLOT_IN_PAST {
             get {
-                return ResourceManager.GetString("TURNO_PASADO", resourceCulture);
+                return ResourceManager.GetString("SLOT_IN_PAST", resourceCulture);
             }
         }
         

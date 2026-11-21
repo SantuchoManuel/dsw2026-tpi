@@ -10,7 +10,7 @@ namespace Dsw2026Tpi.Domain.Entities
         protected DeleteEntityBase(Guid? id = null) : base(id)
         {
         }
-        public void MarcarComoEliminado()
+        public void MarkAsDeleted()
         {
             Deleted = true;
         }

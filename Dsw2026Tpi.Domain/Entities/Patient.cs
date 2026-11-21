@@ -4,17 +4,17 @@ using System.Text;
 
 namespace Dsw2026Tpi.Domain.Entities
 {
-    public class Paciente : DeleteEntityBase
+    public class Patient : DeleteEntityBase
     {
         public int Dni { get; set; }
         public string Email { get; set; }
         public string Name { get; set; }
         public string Cellnumber { get; set; }
-        private Paciente()
+        private Patient()
         {
             
         }
-        public Paciente(int dni, string email, string name = "", string cellnumber = "", Guid? id = null) : base(id)
+        public Patient(int dni, string email, string name = "", string cellnumber = "", Guid? id = null) : base(id)
         { 
             Dni = dni;
             Email = email;

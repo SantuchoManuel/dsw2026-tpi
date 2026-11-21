@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace Dsw2026Tpi.Data.Migrations.Identity
 {
     /// <inheritdoc />
-    public partial class ArregloTablasIdentity : Migration
+    public partial class FixIdentityTables : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)

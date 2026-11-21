@@ -11,41 +11,41 @@ using System.Threading.Tasks;
 namespace Dsw2026Tpi.Api.Controllers;
 
 [Route("api/appointments")]
-public class CitaController : AppController
+public class AppointmentController : AppController
 {
-    private readonly ICitaService _service;
+    private readonly IAppointmentService _service;
 
-    public CitaController(ICitaService service)
+    public AppointmentController(IAppointmentService service)
     {
         _service = service;
     }
 
-    [EnableRateLimiting("TurnosPolicy")]
+    [EnableRateLimiting("AppointmentsPolicy")]
     [Authorize(Policy = Policies.PatientPolicy)]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<IActionResult> SolicitarTurno([FromBody] CitaModel.Request request)
+    public async Task<IActionResult> BookAppointment([FromBody] AppointmentModel.Request request)
     {
-        var result = await _service.CrearCitaAsync(request);
+        var result = await _service.CreateAppointmentAsync(request);
         return Ok(result);
     }
 
     [Authorize(Policy = Policies.PatientPolicy)]
     [HttpGet("patient")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> VerTurnosPaciente([FromQuery] int dni)
+    public async Task<IActionResult> GetPatientAppointments([FromQuery] int dni)
     {
-        var turnos = await _service.ObtenerTurnosPacienteAsync(dni);
-        return Ok(turnos);
+        var appointments = await _service.GetPatientAppointmentsAsync(dni);
+        return Ok(appointments);
     }
 
     [Authorize(Policy = Policies.PatientPolicy)]
     [HttpDelete("{id}")]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<IActionResult> CancelarTurno(Guid id)
+    public async Task<IActionResult> CancelAppointment(Guid id)
     {
-        await _service.CancelarCitaAsync(id);
+        await _service.CancelAppointmentAsync(id);
         return Ok("ok");
     }
 
