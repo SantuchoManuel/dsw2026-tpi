@@ -10,4 +10,6 @@ public interface IDoctorService
     Task<DoctorModel.Response> Create(DoctorModel.Request request);
     Task<DoctorModel.Response> Update(Guid id, DoctorModel.Request request);
     Task Delete(Guid id);
+
+    Task<List<DoctorModel.SlotResponse>> GetSlots(Guid id, DateOnly? date = null);
 }
