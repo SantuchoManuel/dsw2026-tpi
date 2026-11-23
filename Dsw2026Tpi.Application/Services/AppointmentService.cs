@@ -158,6 +158,7 @@ public class AppointmentService : IAppointmentService
             .Take(pageSize)
             .Select(c => new AppointmentModel.SearchResponse(
                 c.Id,
+                c.AvailabilitySlot.Date.ToDateTime(c.AvailabilitySlot.StartTime),
                 c.Status.ToString(),
                 new AppointmentModel.PatientSearchDto(
                     c.Patient.Dni,
