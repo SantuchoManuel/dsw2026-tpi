@@ -22,13 +22,6 @@ public class SpecialityService : ISpecialityService
 
     public async Task<Pagination<SpecialityModel.Response>> GetAll(int pageSize, int pageIndex, string? name = null)
     {
-        if (!string.IsNullOrEmpty(name) && (name.Length < 3 || name.Length > 100))
-        {
-            throw new ValidationException(
-                string.Format(ErrorCodes.FIELD_LENGTH_INVALID, "name", 3, 100),
-                nameof(ErrorCodes.FIELD_LENGTH_INVALID)
-            ).WithDetail("name", "La longitud es inválida");
-        }
 
         var specialities = await _persistence.Paginate<Speciality, string>(
             pageSize,
